@@ -1,0 +1,7 @@
+IMAGE_INSTALL += "wireless-tools"
+IMAGE_INSTALL += "hostapd"
+IMAGE_INSTALL += "hostap-utils"
+IMAGE_INSTALL += "oprofile"
+IMAGE_INSTALL += "alsa-utils"
+IMAGE_INSTALL += "i2c-tools"
+IMAGE_INSTALL += "pm-utils"
