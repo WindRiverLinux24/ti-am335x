@@ -1,1 +1,443 @@
-# This is a holdplace for README
+        TI AM335x EVM/SK Boards
+
+
+1. About this document
+======================
+This document describes the common and non-hardware specific information.
+Please refer to README.hardware for hardware specific information.
+
+Dependencies
+------------
+This layer depends on the oe-core version supplied with Wind River Linux
+and the wr-kernel layer.
+
+
+Maintenance
+-----------
+This layer is maintained by Wind River Systems, Inc.
+Contact <support@windriver.com> or your support representative for more
+information on submitting changes.
+
+
+Building the ti-am335x layer
+---------------------------
+This layer and wr-kernel layer should be added to bblayers.conf. This
+is done automatically when using the Wind River configure wrapper.
+
+
+License
+-------
+Copyright (C) 2014 Wind River Systems, Inc.
+
+The right to copy, distribute or otherwise make use of this software may
+be licensed only pursuant to the terms of an applicable Wind River license
+agreement. No license to Wind River intellectual properly rights is granted
+herein. All rights not licensed by Wind River are reserved by Wind River.
+
+Source code included in tree for individual recipes is under the LICENSE
+stated in each recipe (.bb file) unless other stated.
+
+
+2. Board Specific Patches
+=========================
+To get a list of patches applied to the kernel specific to this BSP
+along with patch descriptions use git-whatchanged on the default
+kernel (git whatchanged <kernel_type>/base..<kernel_type>/<bsp_name>).
+For example:
+
+  # cd build/linux-windriver-<version>/linux
+
+For ti-am335x:
+  # git whatchanged standard/base..standard/ti-am335x
+
+
+3. Boot Instructions
+====================
+
+3.1 NFS Root File System
+------------------------
+
+Configure u-boot with target IP, tftp server, netmask and other required
+network values.
+ > tftp "/<tftp root>/uImage"
+ > setenv bootargs console=ttyO0,115200 root=/dev/nfs rw mem=256M \
+          nfsroot=<nfs server>:<nfs root>,nolock \
+          ip=<target IP>::<gateway>:<netmask>::eth0:off
+ > bootm
+
+Keep in mind that some drivers for the DSP may require 2MB of memory set
+aside for communications buffers. In this case, set mem=254M.
+
+3.2 Rootfs on MMC/SD
+--------------------
+
+An ext2/ext3 filesystem can be created on the MMC/SD using standard
+techniques. The device appears as /dev/mmcblk0 and the first partition
+will appear as /dev/mmcblk0p1.
+
+3.2.1 Deployment
+----------------
+
+After loading the kernel, pass kernel arguments like following:
+
+    root=/dev/mmcblk0p2 rw console=ttyO0,115200n8 rootwait
+
+3.3 Rootfs on NAND Flash
+------------------------
+
+3.3.1 Generate the boot image for jffs2:
+---------------------------------------
+
+Configure your project with following options to generate the related kernel and
+jffs2 boot image:
+
+  --enable-kernel=standard+cfg/fs/flash_fs.scc --enable-bootimage=jffs2
+
+Then "make fs" will create these images in the export directory of your project.
+
+3.3.2 Deploy the different filesystem on NAND
+---------------------------------------------
+
+Boot the target with the kernel and the WRLinux standard filesystem.
+The proper MTD partition can be found as follows (for information on
+creating the standard filesystem, refer to product documentation):
+
+  # root:/mnt# cat /proc/mtd   (From ti-am335x)
+    dev:    size   erasesize  name
+    mtd0: 00020000 00020000 "SPL"
+    mtd1: 00020000 00020000 "SPL.backup1"
+    mtd2: 00020000 00020000 "SPL.backup2"
+    mtd3: 00020000 00020000 "SPL.backup3"
+    mtd4: 001e0000 00020000 "U-Boot"
+    mtd5: 00020000 00020000 "U-Boot Env"
+    mtd6: 00500000 00020000 "Kernel"
+    mtd7: 0f880000 00020000 "File System"
+
+adi-alberta do not support this feature.
+
+3.3.2.1 JFFS2 on NAND
+---------------------
+
+Copy jffs2 image to the target rootfs, and flash it into the proper MTD
+partition(Here is /dev/mtd7):
+
+	# flash_eraseall /dev/mtd7
+	# flashcp -v wrlinux-image-glibc-small-ti-am335x-xxxx.rootfs.jffs2 /dev/mtd7
+
+	You can try to validate it as follows:
+	# mount -t jffs2 /dev/mtdblock7 /mnt/jffs2
+
+3.3.2.2 UBIFS on NAND
+---------------------
+
+	Or for ubifs filesystem:
+
+	# flash_eraseall  /dev/mtd7
+	# ubiattach /dev/ubi_ctrl -m 7
+	# ubimkvol /dev/ubi0 -N root -s 240MiB
+	# mkdir /mnt/ubifs
+	# mount -t ubifs ubi0:root /mnt/ubifs
+	# tar xfj ti_am335x-xxx-dist.tar.bz2 --numeric-owner -C /mnt/ubifs/
+	# umount /mnt/ubifs/
+
+
+3.3.2.3 Deployment
+------------------
+
+The following boot parameters can be passed to the kernel to use a NAND flash
+filesystem as the root device:
+
+	root=/dev/mtdblock7 rw rootfstype=jffs2 console=ttyO0,115200
+
+	or: ubi.mtd=7 root=ubi0:root rw rootfstype=ubifs console=ttyO0,115200
+
+WARNING: Before writing any data to flash, be sure that the flash layout is
+	 understood and the right section selected, otherwise, important data
+	 on the flash will be overwritten.
+
+3.3.2.4 Notes
+-------------
+
+Currently, NAND can't be validated due to the hardware issue.
+
+
+4. Features Notes
+=================
+
+4.1 Crypto engine
+-----------------
+
+4.2.1 Usage and verification
+----------------------------
+
+openssl without cryptodev:
+
+	# openssl speed -evp aes-128-cbc
+	  3s on 16 size blocks: 3506326 aes-128-cbc's in 3.00s
+  	  3s on 64 size blocks: 1060720 aes-128-cbc's in 3.00s
+	  3s on 256 size blocks: 282339 aes-128-cbc's in 3.00s
+	  3s on 1024 size blocks: 71710 aes-128-cbc's in 3.00s
+	  3s on 8192 size blocks: 9005 aes-128-cbc's in 3.00s
+	  OpenSSL 1.0.1e 11 Feb 2013
+	  built on: Wed Mar 12 11:58:49 CST 2014
+
+openssl with cryptodev:
+
+	# modprobe omap-aes
+	# modprobe omap-sham
+	# modprobe cryptodev
+	  cryptodev: driver 1.6 loaded.
+        # openssl speed -evp aes-128-cbc
+ 	  3s on 16 size blocks: 43127 aes-128-cbc's in 0.02s
+ 	  3s on 64 size blocks: 34100 aes-128-cbc's in 0.11s
+ 	  3s on 256 size blocks: 27633 aes-128-cbc's in 0.06s
+ 	  3s on 1024 size blocks: 19539 aes-128-cbc's in 0.04s
+ 	  3s on 8192 size blocks: 6836 aes-128-cbc's in 0.02s
+ 	  OpenSSL 1.0.1e 11 Feb 2013
+ 	  built on: Wed Mar 12 11:58:49 CST 2014
+
+4.1.2 Target Notes
+------------------
+
+make sure openssl is right for ioctl.
+
+
+4.2 Audio
+---------
+
+4.2.1 Usage and verification
+----------------------------
+
+	# amixer cset name='PGA Capture Volume' 80%,80%
+	# amixer cset name='PCM Playback Volume' 80%,80%
+	# arecord -Dhw:0,0 -f S16_LE -r8000 -c2 -v sample.wav
+	# aplay foobar.wav
+
+4.2.2 Target Notes
+------------------
+
+Ensure alsa-lib and alsa-utils packages have been installed on the target
+from path_to_your_glibc-std_project/export/RPMS/armv7a-vfp-neon.
+
+As for glibc-small, build the packages you want to use with the following
+commands:
+
+	# cd <path to your build project>
+	# make -C build package-name.addpkg
+	# make -C build package-name
+
+And install them from path_your_project/build/package-name-xxxx/deploy-rpms.
+Or install from path_to_your_glibc-std_project/export/RPMS/armv7a-vfp-neon
+if you have.
+
+
+4.3 PM suspend
+--------------
+
+4.3.1 Usage and verification
+----------------------------
+
+PM suspend supports two modes, one is suspending into retention
+state, another is suspending into voltageoff state.
+
+To suspend the system in retention mode:
+	#echo mem > /sys/power/state
+
+To suspend the system in voltageoff mode:
+	#mount -t debugfs debugfs /mnt/debugfs
+	#echo 1 > /mnt/debugfs/pm_debug/enable_off_mode
+	#echo mem > /sys/power/state
+
+4.3.2 Target Notes
+------------------
+
+Wakeup resources:
+
+  ti-am335x: tsc/uart0/gpio0.
+
+Make sure the match between the firmware version and hardware module,
+the current version is in recipes-kernel/linux/files/
+
+
+4.4 PM cpufreq
+--------------
+
+4.4.1 Usage and verification
+----------------------------
+
+  cpufreq:
+
+    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+    conservative ondemand userspace powersave performance
+    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+    720000
+    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+    275000 500000 600000 720000
+    # echo 275000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+    275000
+
+
+4.5 PM CPU idle
+---------------
+
+There are three states for ti-am335x, which are C0, C1, and C1+SR, and they
+are implemented separately by WFI, Bypass MPU PLL, and DDR SR.
+
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle# ls -lR
+.:
+total 0
+drwxr-xr-x 2 root root 0 Mar 12 00:46 state0
+drwxr-xr-x 2 root root 0 Mar 12 00:46 state1
+drwxr-xr-x 2 root root 0 Mar 12 00:46 state2
+
+./state0:
+total 0
+-r--r--r-- 1 root root 4096 Mar 12 00:47 desc
+-rw-r--r-- 1 root root 4096 Mar 12 00:47 disable
+-r--r--r-- 1 root root 4096 Mar 12 00:47 latency
+-r--r--r-- 1 root root 4096 Mar 12 00:47 name
+-r--r--r-- 1 root root 4096 Mar 12 00:47 power
+-r--r--r-- 1 root root 4096 Mar 12 00:47 time
+-r--r--r-- 1 root root 4096 Mar 12 00:47 usage
+
+4.5.1 Note 
+----------
+
+They can be disabled by echo 1 > disable as follows:
+
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state2# cat disable
+0
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state2# echo 1 > disable
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state2# cat disable
+1
+
+
+4.6 Touch Screen
+----------------
+
+4.6.1 Usage and verification
+----------------------------
+
+you need to rpm install the tslib related packages to target from your project
+with glibc-std and glibc-std-sato to run the following:
+
+    # export TSLIB_TSDEVICE=/dev/input/event1
+    # export TSLIB_CONSOLEDEVICE=none
+    # ts_calibrate
+
+4.6.2 Target Notes
+------------------
+
+TSLIB input/event2 is for ti-am335x, so here is the case:
+    # export TSLIB_TSDEVICE=/dev/input/event2
+
+
+4.7 Bluetooth
+-------------
+
+4.7.1 Usage and verification
+----------------------------
+
+Bluetooth:
+
+	# modprobe st_drv
+	# /etc/init.d/uim-sysfs start
+	# modprobe btwilink
+	# rfkill unblock bluetooth
+	# hciconfig hci0 up
+	# hcitool -i hci0 scan 
+	Scanning ...
+		16:E8:30:F2:66:12       lenovo A200
+		20:16:D8:93:14:B9       PEK-YZHANG1-L1
+		04:1B:BA:70:31:1E       zumeng.chen
+
+4.7.2 Target Notes
+------------------
+
+Make sure the match between firmware version and your HD wireless module,
+and rfkill set is right for bluetooth. Current version is TIInit_7.6.15.
+
+
+4.8 WLAN
+--------
+
+4.8.1 Usage and verification
+----------------------------
+
+WiFi:
+	# rfkill unblock wlan 
+	# ifconfig wlan0 up 
+	# iwlist  wlan0  scanning
+	# iwconfig wlan0 essid your_essid_host
+	# dhclient wlan0
+
+4.8.2 Target Notes
+------------------
+
+Make sure the match between firmware version and your HD wireless module,
+and rfkill set is right for bluetooth. Current is wl127x.
+
+
+4.9 DCAN
+--------
+
+4.9.1 Usage and verification
+----------------------------
+
+	Source:
+	# canconfig can0 bitrate 50000 ctrlmode triple-sampling on
+	# ip link set can0 up
+	# cansend can0 -i 0x10 0x11 0x22 0x33 0x44 0x55 0x66 0x77 0x88
+
+	Target:
+	# candump can0
+
+4.9.2 Target Notes
+------------------
+
+This feature is only available in Profile #1 of AM335X EVM with a general
+purpose daughter card. Transceiver port number on the daughter card is J11,
+you have to set J11 to 1110, which means 2~4 ON and 1 OFF. Please refer to
+the following link for more information:
+
+  http://processors.wiki.ti.com/index.php/AM335X_DCAN_Driver_Guide
+
+
+4.10 SPI-flash
+--------------
+
+4.10.1 Usage and verification
+-----------------------------
+
+If you want u-boot from SPI-flash, copy MLO and u-boot into SPI-flash
+in u-boot(SD card mode0) as follows in profile_2 mode:
+
+	U-Boot# mmc rescan
+	U-Boot# fatload mmc 0 ${loadaddr} MLO.spi
+	U-Boot# sf write ${loadaddr} 0 ${filesize}
+	U-Boot# fatload mmc 0 ${loadaddr} u-boot.bin
+	U-Boot# sf write ${loadaddr} 0x20000 ${filesize}
+
+As for Linux, you have to ensure the right Pin set of SW3(Baseboard) and
+SW8(Daughterboard), and then the following flash maps will be seen:
+
+    m25p80 spi1.0: found s25fl064k, expected w25q64
+    m25p80 spi1.0: s25fl064k (8192 Kbytes)
+        Creating 5 MTD partitions on "spi_flash":
+        0x000000000000-0x000000020000 : "SPL"
+        0x000000020000-0x000000060000 : "U-Boot"
+        0x000000060000-0x000000062000 : "U-Boot Env"
+        0x000000062000-0x0000003e2000 : "Kernel"
+        0x0000003e2000-0x000000800000 : "File System"
+
+4.10.2 Target Notes
+------------------
+
+Not all am335xevm with 1.2A version have a SPI-flash, so the following
+commands can be used to determine if SPI-flash is present:
+	U-Boot# sf probe 0
+	SF: Detected W25Q64 with page size 4 KiB, total 8 MiB
+
+Please refer to the following link for more information:
+    http://processors.wiki.ti.com/index.php/AM335x_U-Boot_User's_Guide

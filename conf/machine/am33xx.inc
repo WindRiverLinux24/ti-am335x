@@ -1,5 +1,5 @@
 #@TYPE: Machine inc.
-#@NAME: ti-omap3 layer
+#@NAME: ti-am335x layer
 
 require conf/machine/include/tune-cortexa8.inc
 
@@ -10,3 +10,11 @@ KERNEL_IMAGETYPE = "zImage"
 SERIAL_CONSOLE = "115200 ttyO0"
 
 IMAGE_FSTYPES ?= "tar.bz2"
+
+PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg"
+
+XSERVER = "xserver-xorg \
+           xf86-input-evdev \
+           xf86-input-mouse \
+           xf86-video-fbdev \
+           xf86-input-keyboard"

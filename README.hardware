@@ -1,1 +1,158 @@
-# This is a holdplace for README.hardware
+		TI AM335X-EVM/SK Board Support Package
+
+
+Table of Contents
+=================
+
+1. Supported Boards
+2. Change History
+3. BSP Features
+4. BSP Notes
+
+
+1. Supported Boards
+===================
+
+This BSP supports the following boards:
+
+  + TI AM335x EVM  : AM335x processor, REV 1.2A SKU#01 CPU Board.
+  + TI AM335x SK   : AM335x processor, REV 1.2B CPU Board.
+
+
+2. Change History
+=================
+
+  - 2014/03 (US30020): Get TI AM335x EVM and TI AM335x SK supported
+
+
+3. BSP Features
+===============
+
+3.1 Supported Features
+======================
+
+The following BSP features are validated and supported on boards where
+the corresponding h/w features exist.
+
+  o General Platform
+	+ KGDBoE
+	+ Oprofile
+
+  o Bus
+	+ I2C: OMAP On-Chip I2C controller
+	+ SPI: OMAP McSPI bus controller in master mode
+
+  o Network
+  	+ CAN: Bosch D_CAN controller (AM335xEVM only)
+	+ Ethernet:
+		+ AM335x EVM/SK: CPSW 10/100 Mb Ethernet controller
+	+ WiFi: TI WL12xx WLAN card via SDIO connector
+	+ Bluetooth: HCI-UART enabled by TI-ST
+
+  o USB
+	+ MUSB High-speed dual-role controller, high/full/low speed for host, high/full speed for gadget
+		+ AM335xEVM: Host/Gadget/OTG mode
+		+ AM335x SK: Host mode only
+
+  o Storage
+	+ SD/MMC: OMAP High-Speed SD/MMC controller
+	+ NAND Flash:
+		+ AM335x EVM: 256MB Micron MT29F2G08ABAEAWP NAND
+	+ NOR Flash: 8MB W25Q64 SPI NOR Flash (AM335xEVM only, but not all)
+
+  o User_Interface_Multimedia
+	+ AUDIO:
+		+ AM335x EVM/SK: AM33xx SoC Audio Controller
+
+	+ Keypad:
+		+ AM335x EVM/SK: GPIO driven matrix keypad
+		+ AM335x EVM: keypad connected via GPIO pins
+
+	+ Touchscreen:
+		+ AM335x EVM/SK: AM335x SoC 4/5/8 wire touchscreen controller connected to ADC controller
+
+	+ LCD
+		+ AM335x EVM/SK: AM335x SoC LCD controller, Three Five 7in WVGA 24bit RGB TFT LCD module, Frame Buffer with OMAP DSS support
+
+  o Power Mgmt
+	+ Suspend to RAM
+	+ CPU Idle
+	+ CPU Freq
+
+  o HW_Offload
+  	+ AM335x EVM/SK: AM335x SoC H/W AES/SHA Crypto Engine
+
+  o Misc Devices
+	+ UART: OMAP On-Chip High-Speed UART
+	+ Watchdog: OMAP On-Chip H/W Watchdog timer
+	+ GPIO:
+		+ AM335x EVM/SK: TI TPS65910 PMIC GPIO
+	+ RTC:
+		+ AM335x EVM/SK: OMAP RTC driver
+	+ EDMA: AM335x SoC EDMA engine
+	+ Sensors: 
+		+ Taos TSL2550 ambient light sensor
+		+ TI TMP275 temperature sensor
+		+ STMicro LIS3LV02Dx three-axis digital I2C accelerometer
+	+ Power Regulator:
+		+ AM335x EVM/SK: TI TPS65910Ax PMIC Power Regulator
+
+
+3.2 Unsupported Features
+========================
+
+The following features are not supported and validated:
+
+  x AM335x EVM/SK:
+	x SmartReflex: AM33xx SmartReflex doesn't work due to HW issue
+
+4. BSP Notes
+============
+
+Nand and SPI flash are not validated due to hardware issue, but we leave
+the usage information in README for convenience.
+
+
+4.1 TI AM335xEVM
+================
+
+The AM335x General Purpose EVM is a standalone test, development, and
+evaluation module system that enables developers to write software and
+develop hardware around an AM335x processor subsystem.
+
+For a full description of the AM335x EVM, please refer to the following link:
+
+	http://processors.wiki.ti.com/index.php/AM335x_General_Purpose_EVM_HW_User_Guide
+
+4.1.1 Validated Board Info
+--------------------------
+
+This BSP is only validated in following environment. If you use this BSP
+in a different environment it may possibly have some issues.
+
+	Processor:		TI-AM335X
+				CPU board REV 1.2A SKU#01
+	BootLoader:		U-Boot
+	BootLoader Version:	U-Boot 2013.10-00146-g562aa88 (Dec 23 2013 - 15:30:10)
+
+4.2 TI AM335x SK
+================
+
+The AM335x Starter Kit (aka: AM335x SK) (TMDSSK3358) can be used as an
+evaluation and development platform for low cost AM335x based solutions
+and networking platforms.
+
+For a full description of the AM335x Starter Kit, please refer to the following link:
+
+	http://processors.wiki.ti.com/index.php/AM335xStarterKitHardwareUsersGuide
+
+4.2.1 Validated Board Info
+--------------------------
+
+This BSP is only validated in the following environment. If you use this
+BSP in a different environment it may possibly have some issues.
+
+	Processor:             TI-AM335X
+			       CPU board REV 1.2B
+	BootLoader:            U-Boot
+	BootLoader Version:	U-Boot 2013.10-00146-g562aa88 (Dec 23 2013 - 15:30:10)
