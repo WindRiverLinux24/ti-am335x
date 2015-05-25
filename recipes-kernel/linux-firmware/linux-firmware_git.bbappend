@@ -5,7 +5,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 LICENSE = "Proprietary"
 
-FWPATH = "/lib/firmware/"
+FWPATH = "/lib/firmware"
 
 SRC_URI += "\
 	file://TIInit_7.6.15.bts \
