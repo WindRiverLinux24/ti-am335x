@@ -1,4 +1,4 @@
-		TI AM335X-EVM/SK Board Support Package
+		TI AM335X-EVM/SK/beaglebone Board Support Package
 
 
 Table of Contents
@@ -15,15 +15,16 @@ Table of Contents
 
 This BSP supports the following boards:
 
-  + TI AM335x EVM  : AM335x processor, REV 1.2A SKU#01 CPU Board.
-  + TI AM335x SK   : AM335x processor, REV 1.2B CPU Board.
+  + TI AM335x EVM          : AM335x processor, REV 1.2A SKU#01 CPU Board.
+  + TI AM335x SK           : AM335x processor, REV 1.2B CPU Board.
+  + TI AM335x BeagleBone   : AM335x processor, REV RevB6 CPU Board.
 
 
 2. Change History
 =================
 
-  - 2014/03 (US30020): Get TI AM335x EVM and TI AM335x SK supported
-
+  - 2016/05 (US76894): Wind River Linux 8.0 RCPL05, add ti-am335x support
+  					   based on PROCESSOR-SDK-LINUX-AM335X 02_00_01_07
 
 3. BSP Features
 ===============
@@ -45,19 +46,22 @@ the corresponding h/w features exist.
   o Network
   	+ CAN: Bosch D_CAN controller (AM335xEVM only)
 	+ Ethernet:
-		+ AM335x EVM/SK: CPSW 10/100 Mb Ethernet controller
-	+ WiFi: TI WL12xx WLAN card via SDIO connector
-	+ Bluetooth: HCI-UART enabled by TI-ST
+		+ AM335x EVM/SK/BeagleBone: CPSW 10/100 Mb Ethernet controller
+	+ WiFi: TI WL12xx WLAN card via SDIO connector (AM335xEVM/SK only)
+	+ Bluetooth: HCI-UART enabled by TI-ST (AM335xEVM/SK only)
 
   o USB
 	+ MUSB High-speed dual-role controller, high/full/low speed for host, high/full speed for gadget
 		+ AM335xEVM: Host/Gadget/OTG mode
 		+ AM335x SK: Host mode only
+		+ AM335x BeagleBone: Host and device mode
 
   o Storage
 	+ SD/MMC: OMAP High-Speed SD/MMC controller
 	+ NAND Flash:
 		+ AM335x EVM: 256MB Micron MT29F2G08ABAEAWP NAND
+	+ EMMC:
+		+ AM335x BeagleBone: 4GB KE4CN2H5A-A58 MNAND
 	+ NOR Flash: 8MB W25Q64 SPI NOR Flash (AM335xEVM only, but not all)
 
   o User_Interface_Multimedia
@@ -73,6 +77,10 @@ the corresponding h/w features exist.
 
 	+ LCD
 		+ AM335x EVM/SK: AM335x SoC LCD controller, Three Five 7in WVGA 24bit RGB TFT LCD module, Frame Buffer with OMAP DSS support
+	+ HDMI
+		+ AM335x BeagleBone: TDA19988 SoC HDMI controller
+	+ SGX
+		AM335x EVM/SK/BeagleBone: The 2D/3D graphics accelerator (SGX) based on the POWERVR®SGX core
 
   o Power Mgmt
 	+ Suspend to RAM
@@ -80,7 +88,7 @@ the corresponding h/w features exist.
 	+ CPU Freq
 
   o HW_Offload
-  	+ AM335x EVM/SK: AM335x SoC H/W AES/SHA Crypto Engine
+	+ AM335x EVM/SK/BeagleBone: AM335x SoC H/W AES/SHA Crypto Engine
 
   o Misc Devices
 	+ UART: OMAP On-Chip High-Speed UART
@@ -88,7 +96,7 @@ the corresponding h/w features exist.
 	+ GPIO:
 		+ AM335x EVM/SK: TI TPS65910 PMIC GPIO
 	+ RTC:
-		+ AM335x EVM/SK: OMAP RTC driver
+		+ AM335x EVM/SK/BeagleBone: OMAP RTC driver
 	+ EDMA: AM335x SoC EDMA engine
 	+ Sensors: 
 		+ Taos TSL2550 ambient light sensor
@@ -96,6 +104,7 @@ the corresponding h/w features exist.
 		+ STMicro LIS3LV02Dx three-axis digital I2C accelerometer
 	+ Power Regulator:
 		+ AM335x EVM/SK: TI TPS65910Ax PMIC Power Regulator
+		+ AM335x BeagleBone: TI PS65217C PMIC Power Regulator
 
 
 3.2 Unsupported Features
@@ -108,10 +117,6 @@ The following features are not supported and validated:
 
 4. BSP Notes
 ============
-
-Nand and SPI flash are not validated due to hardware issue, but we leave
-the usage information in README for convenience.
-
 
 4.1 TI AM335xEVM
 ================
@@ -133,7 +138,7 @@ in a different environment it may possibly have some issues.
 	Processor:		TI-AM335X
 				CPU board REV 1.2A SKU#01
 	BootLoader:		U-Boot
-	BootLoader Version:	U-Boot 2013.10-00146-g562aa88 (Dec 23 2013 - 15:30:10)
+	BootLoader Version:	U-Boot 2015.07-00146-g562aa88 (Dec 23 2013 - 15:30:10)
 
 4.2 TI AM335x SK
 ================
@@ -155,4 +160,25 @@ BSP in a different environment it may possibly have some issues.
 	Processor:             TI-AM335X
 			       CPU board REV 1.2B
 	BootLoader:            U-Boot
-	BootLoader Version:	U-Boot 2013.10-00146-g562aa88 (Dec 23 2013 - 15:30:10)
+	BootLoader Version:	   U-Boot SPL 2015.07-g7e537bf (Feb 11 2015 - 08:15:16)
+
+4.3 TI AM335x Beaglebone
+========================
+
+The AM335x Starter Kit (aka: AM335x BBB) (TMDSSK3358) is a low-cost,
+community-supported development platform for developers and hobbyists.
+
+For a full description of the AM335x Starter Kit, please refer to the following link:
+
+	http://beagleboard.org/getting-started
+
+4.3.1 Validated Board Info
+--------------------------
+
+This BSP is only validated in the following environment. If you use this
+BSP in a different environment it may possibly have some issues.
+
+	Processor:             TI-AM335X
+			       CPU board REV RevB6
+	BootLoader:            U-Boot
+	BootLoader Version:	   U-Boot SPL 2015.07-g7e537bf (Feb 11 2015 - 08:15:16)
