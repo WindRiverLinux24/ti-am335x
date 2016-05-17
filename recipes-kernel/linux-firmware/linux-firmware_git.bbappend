@@ -23,9 +23,9 @@ do_install_append() {
 	cp ${WORKDIR}/am335x-evm-scale-data.bin ${D}${FWPATH}
 }
 
-PACKAGES =+ " ${PN}-wl127x-fw-4"
+PACKAGES =+ " ${PN}-wl127x-fw-5"
 
-FILES_${PN}-wl127x-fw-4 = " \
+FILES_${PN}-wl127x-fw-5 = " \
   ${FWPATH}LICENCE \
   ${FWPATH}TIInit_7.6.15.bts \
   ${FWPATH}ti-connectivity/wl1271-nvs.bin \
