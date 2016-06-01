@@ -3,8 +3,6 @@
 #
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-LICENSE = "Proprietary"
-
 FWPATH = "/lib/firmware"
 
 SRC_URI += "\
