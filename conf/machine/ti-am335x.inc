@@ -6,7 +6,7 @@ require conf/machine/include/tune-cortexa7.inc
 
 MACHINE_FEATURES += "usbhost jffs2 ext2 screen alsa vfat"
 
-KERNEL_IMAGETYPE = "uImage"
+KERNEL_IMAGETYPE = "zImage"
 
 SERIAL_CONSOLE = "115200 ttyO0"
 

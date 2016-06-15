@@ -143,7 +143,7 @@ creating the standard filesystem, refer to product documentation):
 	mtd1: 00020000 00020000 "NAND.SPL.backup1"
 	mtd2: 00020000 00020000 "NAND.SPL.backup2"
 	mtd3: 00020000 00020000 "NAND.SPL.backup3"
-	mtd4: 00040000 00020000 "NAND.DTB"
+	mtd4: 00040000 00020000 "NAND.u-boot-spl-os"
 	mtd5: 00100000 00020000 "NAND.u-boot"
 	mtd6: 00020000 00020000 "NAND.u-boot-env"
 	mtd7: 00020000 00020000 "NAND.u-boot-env.backup1"
@@ -159,7 +159,7 @@ Copy jffs2 image to the target rootfs, and flash it into the proper MTD
 partition(Here is /dev/mtd7):
 
 	# flash_eraseall /dev/mtd9
-	# flashcp -v wrlinux-image-glibc-small-ti-am335x-xxxx.rootfs.jffs2 /dev/mtd9
+	# flashcp -v ti-am335x-wrlinux-image-glibc-small-ti-am335x-xxxx.rootfs.jffs2 /dev/mtd9
 
 	You can try to validate it as follows:
 	# mount -t jffs2 /dev/mtdblock9 /mnt/jffs2
@@ -220,8 +220,6 @@ openssl without cryptodev:
 
 openssl with cryptodev:
 
-	# modprobe omap-aes
-	# modprobe omap-sham
 	# modprobe cryptodev
 	  cryptodev: driver 1.6 loaded.
         # openssl speed -evp aes-128-cbc
@@ -547,8 +545,9 @@ host mode:
 		usb 2-1: SerialNumber: 08606E6D3FDEBE10270702D4
 		usb-storage 2-1:1.0: USB Mass Storage device detecte
 OTG mode:
-	for host mode, plug otg cable
-	for device mode, it is the same as normal usb device
+	otg is enabled by usb gadget driver, so fristly you need to load an usb gadget driver,
+	like g_mass_storage, then you can plug in otg cable as host mode or plug in Micro-b
+	cable as device mode.
 
 
 5.12.2 Target Notes

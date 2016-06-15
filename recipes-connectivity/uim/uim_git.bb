@@ -8,7 +8,7 @@ PR_append = "+gitr${SRCPV}"
 INITSCRIPT_NAME = "uim-sysfs"
 INITSCRIPT_PARAMS = "defaults 03"
 
-inherit update-rc.d
+inherit update-rc.d systemd
 
 SRCREV = "c73894456df5def97111cb33d2106b684b8b7959"
 SRC_URI = "git://gitorious.org/uim/uim.git \

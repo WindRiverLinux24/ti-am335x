@@ -11,6 +11,7 @@ wireless-tools \
 wpa-supplicant \
 linux-firmware \
 omapdrm-pvr \
+uim \
 "
 
 IMAGE_INSTALL += "${@bb.utils.contains('MACHINE', 'ti-am335x', '${TI-AM335X-IMAGE-INSTALL}', '', d)}"
