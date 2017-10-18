@@ -1,8 +1,5 @@
-#@TYPE: Machine inc.
-#@NAME: ti-am335x layer
-
-DEFAULTTUNE = "cortexa7thf-neon"
-require conf/machine/include/tune-cortexa7.inc
+DEFAULTTUNE ?= "cortexa8thf-neon"
+require conf/machine/include/tune-cortexa8.inc
 
 MACHINE_FEATURES += "usbhost jffs2 ext2 screen alsa vfat"
 
@@ -19,5 +16,3 @@ XSERVER = "xserver-xorg \
            xf86-input-mouse \
            xf86-video-fbdev \
            xf86-input-keyboard"
-
-CRIU_BUILD_ARCH = "armv7"

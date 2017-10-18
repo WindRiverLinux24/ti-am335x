@@ -11,10 +11,10 @@ INITSCRIPT_PARAMS = "defaults 03"
 inherit update-rc.d systemd
 
 SRCREV = "c73894456df5def97111cb33d2106b684b8b7959"
-SRC_URI = "git://gitorious.org/uim/uim.git \
+SRC_URI = "git://gitorious.org/uim/uim.git;protocol=https \
 	   file://0001-uim-Add-command-line-args-for-passing-sysfs-node-pat.patch \
 	   file://uim-sysfs \
-"
+	"
 
 S = "${WORKDIR}/git"
 

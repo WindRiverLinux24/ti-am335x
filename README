@@ -1,4 +1,4 @@
-        TI AM335x EVM/SK/Beaglebone Boards
+        TI AM335xEVM-SK Boards
 
 
 1. About this document
@@ -27,7 +27,7 @@ is done automatically when using the Wind River configure wrapper.
 
 License
 -------
-Copyright (C) 2016 Wind River Systems, Inc.
+Copyright (C) 2017 Wind River Systems, Inc.
 
 The right to copy, distribute or otherwise make use of this software may
 be licensed only pursuant to the terms of an applicable Wind River license
@@ -54,8 +54,6 @@ for not supported:
 |   standard    |     Y     |      Y      |     N     |     N      |
 --------------------------------------------------------------------
 |   preempt_rt  |     Y     |      Y      |     N     |     N      |
---------------------------------------------------------------------
-|   cgl         |     N     |      N      |     N     |     N      |
 --------------------------------------------------------------------
 
 3. Board Specific Patches
@@ -97,11 +95,6 @@ network values.
 Keep in mind that some drivers for the DSP may require 2MB of memory set
 aside for communications buffers. In this case, set mem=254M.
 
-4.1.1 Notes
------------
-
-for BeagleBone board, you should use different memory address when booting the kernel:
- > bootz 0x82000000 - 0x88000000
 
 4.2 Rootfs on MMC/SD
 --------------------
@@ -117,86 +110,6 @@ After loading the kernel, pass kernel arguments like following:
 
     root=/dev/mmcblk0p2 rw console=ttyO0,115200n8 rootwait
 
-4.3 Rootfs on NAND Flash
-------------------------
-
-4.3.1 Generate the boot image for jffs2:
----------------------------------------
-
-Configure your project with following options to generate the related kernel and
-jffs2 boot image:
-
-  --enable-kernel=standard+cfg/fs/flash_fs.scc --enable-bootimage=jffs2
-
-Then "make fs" will create these images in the export directory of your project.
-
-4.3.2 Deploy the different filesystem on NAND
----------------------------------------------
-
-Boot the target with the kernel and the WRLinux standard filesystem.
-The proper MTD partition can be found as follows (for information on
-creating the standard filesystem, refer to product documentation):
-
-  #	roott@128:~# cat /proc/mtd (From ti-am335x)
-	dev:    size   erasesize  name
-	mtd0: 00020000 00020000 "NAND.SPL"
-	mtd1: 00020000 00020000 "NAND.SPL.backup1"
-	mtd2: 00020000 00020000 "NAND.SPL.backup2"
-	mtd3: 00020000 00020000 "NAND.SPL.backup3"
-	mtd4: 00040000 00020000 "NAND.u-boot-spl-os"
-	mtd5: 00100000 00020000 "NAND.u-boot"
-	mtd6: 00020000 00020000 "NAND.u-boot-env"
-	mtd7: 00020000 00020000 "NAND.u-boot-env.backup1"
-	mtd8: 00800000 00020000 "NAND.kernel"
-	mtd9: 0f600000 00020000 "NAND.file-system"
-
-adi-alberta do not support this feature.
-
-4.3.2.1 JFFS2 on NAND
----------------------
-
-Copy jffs2 image to the target rootfs, and flash it into the proper MTD
-partition(Here is /dev/mtd7):
-
-	# flash_eraseall /dev/mtd9
-	# flashcp -v ti-am335x-wrlinux-image-glibc-small-ti-am335x-xxxx.rootfs.jffs2 /dev/mtd9
-
-	You can try to validate it as follows:
-	# mount -t jffs2 /dev/mtdblock9 /mnt/jffs2
-
-4.3.2.2 UBIFS on NAND
----------------------
-
-	Or for ubifs filesystem:
-
-	# flash_eraseall  /dev/mtd9
-	# ubiattach /dev/ubi_ctrl -m 9
-	# ubimkvol /dev/ubi0 -N root -s 235MiB
-	# mkdir /mnt/ubifs
-	# mount -t ubifs ubi0:root /mnt/ubifs
-	# tar xfj ti_am335x-xxx-dist.tar.bz2 --numeric-owner -C /mnt/ubifs/
-	# umount /mnt/ubifs/
-
-
-4.3.2.3 Deployment
-------------------
-
-The following boot parameters can be passed to the kernel to use a NAND flash
-filesystem as the root device:
-
-	root=/dev/mtdblock9 rw rootfstype=jffs2 console=ttyO0,115200
-
-	or: ubi.mtd=9 root=ubi0:root rw rootfstype=ubifs console=ttyO0,115200
-
-WARNING: Before writing any data to flash, be sure that the flash layout is
-	 understood and the right section selected, otherwise, important data
-	 on the flash will be overwritten.
-
-4.3.2.4 Notes
--------------
-
-Currently, NAND can't be validated due to the hardware issue.
-
 
 5. Features Notes
 =================
@@ -204,7 +117,7 @@ Currently, NAND can't be validated due to the hardware issue.
 5.1 Crypto engine
 -----------------
 
-5.2.1 Usage and verification
+5.1.1 Usage and verification
 ----------------------------
 
 openssl without cryptodev:
@@ -216,7 +129,7 @@ openssl without cryptodev:
 	  3s on 1024 size blocks: 71710 aes-128-cbc's in 3.00s
 	  3s on 8192 size blocks: 9005 aes-128-cbc's in 3.00s
 	  OpenSSL 1.0.1e 11 Feb 2013
-	  built on: Wed Mar 12 11:58:49 CST 2016
+	  built on: Wed Mar 12 11:58:49 CST 2017
 
 openssl with cryptodev:
 
@@ -243,28 +156,12 @@ make sure openssl is right for ioctl.
 5.2.1 Usage and verification
 ----------------------------
 
-	# amixer cset name='PGA Capture Volume' 80%,80%
-	# amixer cset name='PCM Playback Volume' 80%,80%
-	# arecord -Dhw:0,0 -f S16_LE -r8000 -c2 -v sample.wav
 	# aplay foobar.wav
 
 5.2.2 Target Notes
 ------------------
 
-Ensure alsa-lib and alsa-utils packages have been installed on the target
-from path_to_your_glibc-std_project/export/RPMS/armv7a-vfp-neon.
-
-As for glibc-small, build the packages you want to use with the following
-commands:
-
-	# cd <path to your build project>
-	# make -C build package-name.addpkg
-	# make -C build package-name
-
-And install them from path_your_project/build/package-name-xxxx/deploy-rpms.
-Or install from path_to_your_glibc-std_project/export/RPMS/armv7a-vfp-neon
-if you have.
-
+There is no in-line or mic output pins for EVMSK board.
 
 5.3 PM suspend
 --------------
@@ -272,27 +169,13 @@ if you have.
 5.3.1 Usage and verification
 ----------------------------
 
-PM suspend supports two modes, one is suspending into retention
-state, another is suspending into voltageoff state.
-
-To suspend the system in retention mode:
-	#echo mem > /sys/power/state
-
-To suspend the system in voltageoff mode:
-	#mount -t debugfs debugfs /mnt/debugfs
-	#echo 1 > /mnt/debugfs/pm_debug/enable_off_mode
-	#echo mem > /sys/power/state
+	# echo standby > /sys/power/state
 
 5.3.2 Target Notes
 ------------------
 
-Wakeup resources:
-
-  ti-am335x: tsc/uart0/gpio0.
-
-Make sure the match between the firmware version and hardware module,
-the current version is in recipes-kernel/linux/files/
-
+PM suspend supports two modes standby and freeze, mem is not supported as
+SDK, and the current CM3 firmware version is 0x192
 
 5.4 PM cpufreq
 --------------
@@ -321,37 +204,31 @@ CPUFreq can only be tested by userspace mode.
 5.5 PM CPU idle
 ---------------
 
-There are three states for ti-am335x, which are C0, C1, and C1+SR, and they
-are implemented separately by WFI, Bypass MPU PLL, and DDR SR.
+5.5.1 Usage and verification
+----------------------------
+
+There are two states for ti-am335x, which are C0, C1 as follows:
 
 root@localhost:/sys/devices/system/cpu/cpu0/cpuidle# ls -lR
 .:
 total 0
 drwxr-xr-x 2 root root 0 Mar 12 00:46 state0
 drwxr-xr-x 2 root root 0 Mar 12 00:46 state1
-drwxr-xr-x 2 root root 0 Mar 12 00:46 state2
 
-./state0:
-total 0
--r--r--r-- 1 root root 4096 Mar 12 00:47 desc
--rw-r--r-- 1 root root 4096 Mar 12 00:47 disable
--r--r--r-- 1 root root 4096 Mar 12 00:47 latency
--r--r--r-- 1 root root 4096 Mar 12 00:47 name
--r--r--r-- 1 root root 4096 Mar 12 00:47 power
--r--r--r-- 1 root root 4096 Mar 12 00:47 time
--r--r--r-- 1 root root 4096 Mar 12 00:47 usage
+
+They can be disabled by echo 1 > disable as follows:
+
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# cat disable
+0
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# echo 1 > disable
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# cat disable
+1
 
 5.5.1 Note
 ----------
 
-They can be disabled by echo 1 > disable as follows:
-
-root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state2# cat disable
-0
-root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state2# echo 1 > disable
-root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state2# cat disable
-1
-
+Since DDR2 is deprecated currently, C2 SR has been removed from SDK. So there
+are only two idle states in the latest SDK.
 
 5.6 Touch Screen
 ----------------
@@ -359,19 +236,8 @@ root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state2# cat disable
 5.6.1 Usage and verification
 ----------------------------
 
-you need to rpm install the tslib related packages to target from your project
-with glibc-std and glibc-std-sato to run the following:
-
-    # export TSLIB_TSDEVICE=/dev/input/event1
-    # export TSLIB_CONSOLEDEVICE=none
-    # ts_calibrate
-
-5.6.2 Target Notes
-------------------
-
-TSLIB input/event2 is for ti-am335x, so here is the case:
-    # export TSLIB_TSDEVICE=/dev/input/event2
-
+Touch screen calibration will be done when boot, and there is also a program
+in desktop when matchbox starts.
 
 5.7 Bluetooth
 -------------
@@ -381,21 +247,33 @@ TSLIB input/event2 is for ti-am335x, so here is the case:
 
 Bluetooth:
 
+	# modprobe st_drv (skipped if 'lsmod | grep st_drv' is set )
 	# /etc/init.d/uim-sysfs start
+	# modprobe btwilink
 	# rfkill unblock bluetooth
 	# hciconfig hci0 up
 	# hcitool -i hci0 scan 
 	Scanning ...
 		16:E8:30:F2:66:12       lenovo A200
-		20:16:D8:93:14:B9       PEK-YZHANG1-L1
-		04:1B:BA:70:31:1E       zumeng.chen
 
 5.7.2 Target Notes
 ------------------
 
+If there is no outpu when "modprobe btwilink",  which means the communication
+between BT module and HCI is down by UART1, the whole system is not very well
+because of hardware and software, and WL12xx has been dropped in the latest
+SD, suggestion:
+
+	# hciconfig hci0 down
+	# rmmod btwilink
+	# /etc/init.d/uim-sysfs stop
+	# rmmod st_drv
+
+Then do all steps in 5.7.1 again.
+
 Make sure the match between firmware version and your HD wireless module,
 and rfkill set is right for bluetooth. Current version is TIInit_7.6.15.
-
+And suppose st-drv module has been installed for the steps above..
 
 5.8 WLAN
 --------
@@ -407,176 +285,74 @@ WiFi:
 	# rfkill unblock wlan 
 	# ifconfig wlan0 up 
 	# iwlist  wlan0  scanning
-	# iwconfig wlan0 essid your_essid_host
-	# dhclient wlan0
 
 5.8.2 Target Notes
 ------------------
 
-Make sure the match between firmware version and your HD wireless module,
-and rfkill set is right for bluetooth. Current is wl127x.
+Make sure the match between firmware version and your HD wireless module, and
+rfkill set is right for wlan. The default firmare is wl127x, but unlucky, it
+has been dropped in the latest SD, please contact the board vendor for more
+information.
 
-
-5.9 DCAN
---------
-
-5.9.1 Usage and verification
-----------------------------
-
-	Source:
-	# canconfig can0 bitrate 50000 ctrlmode triple-sampling on
-	# ip link set can0 up
-	# cansend can0 -i 0x10 0x11 0x22 0x33 0x44 0x55 0x66 0x77 0x88
-
-	Target:
-	# candump can0
-
-5.9.2 Target Notes
-------------------
-
-This feature is only available in Profile #1 of AM335X EVM with a general
-purpose daughter card. Transceiver port number on the daughter card is J11,
-you have to set J11 to 1110, which means 2~4 ON and 1 OFF. Please refer to
-the following link for more information:
-
-  http://processors.wiki.ti.com/index.php/AM335X_DCAN_Driver_Guide
-
-
-5.10 SPI-flash
---------------
-
-5.10.1 Usage and verification
------------------------------
-
-If you want u-boot from SPI-flash, copy MLO and u-boot into SPI-flash
-in u-boot(SD card mode0) as follows in profile_2 mode:
-
-	U-Boot# mmc rescan
-	U-Boot# fatload mmc 0 ${loadaddr} MLO.spi
-	U-Boot# sf write ${loadaddr} 0 ${filesize}
-	U-Boot# fatload mmc 0 ${loadaddr} u-boot.bin
-	U-Boot# sf write ${loadaddr} 0x20000 ${filesize}
-
-As for Linux, you have to ensure the right Pin set of SW3(Baseboard) and
-SW8(Daughterboard), and then the following flash maps will be seen:
-
-    m25p80 spi1.0: found s25fl064k, expected w25q64
-    m25p80 spi1.0: s25fl064k (8192 Kbytes)
-        Creating 5 MTD partitions on "spi_flash":
-        0x000000000000-0x000000020000 : "SPL"
-        0x000000020000-0x000000060000 : "U-Boot"
-        0x000000060000-0x000000062000 : "U-Boot Env"
-        0x000000062000-0x0000003e2000 : "Kernel"
-        0x0000003e2000-0x000000800000 : "File System"
-
-5.10.2 Target Notes
-------------------
-
-Not all am335xevm with 1.2A version have a SPI-flash, so the following
-commands can be used to determine if SPI-flash is present:
-	U-Boot# sf probe 0
-	SF: Detected W25Q64 with page size 4 KiB, total 8 MiB
-
-Please refer to the following link for more information:
-    http://processors.wiki.ti.com/index.php/AM335x_U-Boot_User's_Guide
-
-
-5.11 Watchdog
+5.9 Watchdog
 -------------
 
-5.11.1 Usage and verification
+5.9.1 Usage and verification
 -----------------------------
 
-	# echo 1 > /dev/watchdog
-	  watchdog watchdog0: nowayout prevents watchdog being stopped!
-	  watchdog watchdog0: watchdog did not stop!
+	# pkill watchdog
 
-Check the bootstatus after the board booted, you will get the following:
-
-	# dmesg|grep -i dog
-	  omap_wdt: OMAP Watchdog Timer Rev 0x01: initial timeout 60 sec bootstatus 0x13
-
-5.11.2 Target Notes
+5.9.2 Target Notes
 -------------------
-
-	bootstatus:
-		0x03 : The board booted from power/reset;
-		0x13 : The set of bit4 means from watchdog.
 
 Please refer to 8.1.13.5.3 PRM_RSTST Register in AM335x ARM CortexTM-A8 Microprocessors
 (MPUs) Technical Reference Manual for more information.
 
 
-5.12 Touchscreen
+5.10 Touchscreen
 ----------------
 
-5.11.1 Usage and verification
+5.10.1 Usage and verification
 -----------------------------
 
-Normally, calibration will be run according to your settings on pointcal-xinput
-and machconfig. If the automatic configuration fails, the following commands can
-be used to do a manual setup:
+There will be a calibration program when matchbox starts in sato mode, so it's
+OK to do screen calibration
 
-	# export DISPLAY=:0
-	# xinput list
-	# xinput_calibrator
-
-5.11.2 Target Notes
+5.10.2 Target Notes
 -------------------
 
 machconfig and pointcal-xinput are BSP specific utilities.
 
 
-5.12 Usb
+5.11 Usb
 
-5.12.1 Usage and verification
+5.11.1 Usage and verification
 -----------------------------
 
-device mode:
-	# modprobe g_mass_storage  file=/dev/mmcblk0
-		plug usb cable to pc, pc will emulate the mass_storage device.
-host mode:
-	plug mass storage to board, then you can find some logs in dmesg as follow:
-		335x-evm login: usb 2-1: new high-speed USB device number 2 using musb-hdrc
-		usb 2-1: New USB device found, idVendor=0951, idProduct=1666
-		usb 2-1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
-		usb 2-1: Product: DataTraveler 3.0
-		usb 2-1: Manufacturer: Kingston
-		usb 2-1: SerialNumber: 08606E6D3FDEBE10270702D4
-		usb-storage 2-1:1.0: USB Mass Storage device detecte
-OTG mode:
-	otg is enabled by usb gadget driver, so fristly you need to load an usb gadget driver,
-	like g_mass_storage, then you can plug in otg cable as host mode or plug in Micro-b
-	cable as device mode.
+Host mode is OK as-is, the following example for device mode:
+	# modprobe g_multi "file=/dev/mmcblk0p1"
 
-
-5.12.2 Target Notes
+5.11.2 Target Notes
 -------------------
-	SRP doesn't work on AM335x and Vbus is always switched on from initial A-device.
 
-5.13 PWMSS
+Please refer to the following script for more usb gadget usages:
+  https://github.com/RobertCNelson/boot-scripts/blob/master/boot/am335x_evm.sh
 
-5.13.1 Usage and verification
+5.12 PWMSS
+
+5.12.1 Usage and verification
 -----------------------------
 	The lcd brightness is controlled by ecap.
 	the brightness will be changed:
 	# echo 0~8 > /sys/devices/platform/backlight/backlight/backlight/brightness
 
-5.13.2 Target Notes
--------------------
+5.13 Graphics SGX
 
-5.14 Graphics SGX
+Currently the third party lib APIs are not integrated, but these kernel modules
+pvr-related have been verified in SDK environment, and the wrlinux-std-sato is
+the default distro to build graphics staffs.
 
-5.14.1 Usage and verification
+5.13.1 Usage and verification
 -----------------------------
 
-For SGX, it is the extern drm driver, you can find it in /lib/module/*WR8*/extra/omapdrm_pvr.ko,
-it has been validated in SDK PROCESSOR-SDK-LINUX-AM335X 02_00_01_07.
-We can't support the SGX more deeply, through TI provide the open source of SGX, but others are
-still private.
-	for summary information, you can find it in the link as follow:
-
-	http://processors.wiki.ti.com/index.php/Processor_Linux_SDK_Graphics_and_Display
-
-5.13.2 Target Notes
--------------------
+http://processors.wiki.ti.com/index.php/Processor_Linux_SDK_Graphics_and_Display
