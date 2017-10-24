@@ -32,4 +32,4 @@ do_install_append() {
 	cp ${WORKDIR}/am335x-pm-firmware.elf ${D}${FWPATH}
 }
 
-INSANE_SKIP_${PN}_ti-am335x += "arch"
+INSANE_SKIP_${PN} += "arch"
