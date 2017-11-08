@@ -248,9 +248,9 @@ in desktop when matchbox starts.
 Bluetooth:
 
 	# modprobe st_drv (skipped if 'lsmod | grep st_drv' is set )
-	# /etc/init.d/uim-sysfs start
-	# modprobe btwilink
+	# uim-sysfs start
 	# rfkill unblock bluetooth
+	# modprobe btwilink
 	# hciconfig hci0 up
 	# hcitool -i hci0 scan 
 	Scanning ...
@@ -266,7 +266,7 @@ SD, suggestion:
 
 	# hciconfig hci0 down
 	# rmmod btwilink
-	# /etc/init.d/uim-sysfs stop
+	# uim-sysfs stop
 	# rmmod st_drv
 
 Then do all steps in 5.7.1 again.

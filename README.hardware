@@ -114,3 +114,12 @@ BSP in a different environment it may possibly have some issues.
 	Processor:		TI-AM335X CPU board REV 1.2B
 	BootLoader:		U-Boot
 	BootLoader Version:	U-Boot SPL 2017.01-g9fd60700db (Jun 28 2017 - 17:18:56)
+
+4.1.2 Bluetooth
+---------------
+
+Currently, this function has a limited support since there is a big gap between
+driver and bluetooth proto, and TI has claimed this module has been dropped.
+
+Please refer to the following TI Link for more information:
+http://e2e.ti.com/support/wireless_connectivity/wilink_wifi_bluetooth/f/307/t/634587
