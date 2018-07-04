@@ -16,6 +16,7 @@ BRANCH = "ti-img-sgx/1.14.3699939/k4.9"
 
 SRC_URI = "git://git.ti.com/graphics/omap5-sgx-ddk-linux.git;protocol=git;branch=${BRANCH} \
 	file://0001-km-4.8-for-fixing-compiling-error.patch \
+	file://update_get_user_pages_remote.patch \
 	"
 
 S = "${WORKDIR}/git"
