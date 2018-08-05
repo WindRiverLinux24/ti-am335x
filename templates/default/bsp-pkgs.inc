@@ -1,16 +1,12 @@
 TI-AM335X-IMAGE-INSTALL = " \
 alsa-utils \
-lm-sensors \
+can-utils \
+cryptodev-module \
 i2c-tools \
-pm-utils \
-ptpd \
-hostapd  \
-hostap-utils  \
-wireless-tools \
-wpa-supplicant \
 linux-firmware \
 omapdrm-pvr \
-uim \
+pm-utils \
+ptpd \
 "
 
 IMAGE_INSTALL += "${@bb.utils.contains('MACHINE', 'ti-am335x', '${TI-AM335X-IMAGE-INSTALL}', '', d)}"
