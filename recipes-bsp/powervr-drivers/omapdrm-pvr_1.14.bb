@@ -12,20 +12,17 @@ PR = "${MACHINE_KERNEL_PR}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-BRANCH = "ti-img-sgx/1.14.3699939/k4.9"
+BRANCH = "ti-img-sgx/1.14.3699939/k4.14"
 
-SRC_URI = "git://git.ti.com/graphics/omap5-sgx-ddk-linux.git;protocol=git;branch=${BRANCH} \
-	file://0001-km-4.8-for-fixing-compiling-error.patch \
-	file://update_get_user_pages_remote.patch \
-	"
+SRC_URI = "git://git.ti.com/graphics/omap5-sgx-ddk-linux.git;protocol=git;branch=${BRANCH}"
 
 S = "${WORKDIR}/git"
 
-SRCREV = "0086977380d3320d70a3abc78b95fa0641427073"
+SRCREV = "d2b3959738cfcc6209e8e882d1989de790866c8f"
 
 TARGET_PRODUCT_ti-am335x = "ti335x"
 
-EXTRA_OEMAKE += 'KERNELDIR="${STAGING_KERNEL_DIR}" TARGET_PRODUCT=${TARGET_PRODUCT}'
+EXTRA_OEMAKE += 'KERNELDIR="${STAGING_KERNEL_DIR}" EXTRA_KBUILD_SOURCE=${STAGING_KERNEL_BUILDDIR} TARGET_PRODUCT=${TARGET_PRODUCT}'
 
 do_compile_prepend() {
     cd ${S}/eurasia_km/eurasiacon/build/linux2/omap_linux
