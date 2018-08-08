@@ -1,4 +1,4 @@
-		TI AM335XEVM-SK Board Support Package
+		TI AM335X EVM/SK Board Support Package
 
 
 Table of Contents
@@ -15,13 +15,14 @@ Table of Contents
 
 This BSP supports the following boards:
 
-  + TI AM335xEVM SK:	AM335x processor, REV 1.2B CPU Board.
+  + TI AM335x EVM          : AM335x processor, REV 1.2A SKU#01 CPU Board.
+  + TI AM335x SK           : AM335x processor, REV 1.2B CPU Board.
 
 
 2. Change History
 =================
 
-  - 2017/11 (US103402): Wind River Linux 9.0 RCPL, add ti-am335xevm-sk support
+  - 2018/08 (US114189): WRLinux 10.17.41 RCPL11, add TI AM335x evm/sk support
 			based on ti-processor-sdk-linux-am335x-evm-04.00.00.04
 
 3. BSP Features
@@ -38,32 +39,24 @@ the corresponding h/w features exist.
 	+ SPI: OMAP McSPI bus controller in master mode
 
   o Network
+	+ CAN: Bosch D_CAN controller (EVM only in profile #1)
 	+ Ethernet: AM335xEVM-SK: CPSW 10/100 Mb Ethernet controller
-	+ WiFi: TI WL12xx WLAN card via SDIO connector
-	+ Bluetooth: HCI-UART
 
   o Storage
+	+ NAND 256MB Micron MT29F2G08ABAEAWP NAND (EVM only)
+	+ SRAM for Voltage Scale Usage and Save/Restor for momory registers when System idle.
 	+ MUSB High-speed dual-role controller, high/full/low speed for host, high/full speed for gadget
-
 	+ SD/MMC: OMAP High-Speed SD/MMC controller
 
   o User_Interface_Multimedia
-	+ AUDIO:
-		AM335xEVM-SK: AM33xx SoC Audio Controller
-
-	+ Keypad:
-		AM335xEVM-SK: GPIO driven matrix keypad
-
-	+ Touchscreen:
-		AM335xEVM-SK: AM335x SoC 4/5/8 wire touchscreen controller connected to ADC controller
-
-	+ LCD
-		AM335xEVM-SK: AM335x SoC LCD controller, Three Five 7in WVGA 24bit RGB TFT LCD module, Frame Buffer with OMAP DSS support
-
-	+ SGX
-		AM335xEVM-SK: The 2D/3D graphics accelerator (SGX) based on the POWERVR core
+	+ AUDIO: AM33xx SoC Audio Controller
+	+ Keypad: GPIO driven matrix keypad
+	+ Touchscreen: AM335x SoC 4/5/8 wire touchscreen controller connected to ADC controller
+	+ LCD: AM335x SoC LCD controller, Frame Buffer with OMAP DSS support
+	+ SGX: The 2D/3D graphics accelerator (SGX) based on the POWERVR core
 
   o Power Mgmt
+	+ Suspend to RAM
 	+ CPU Idle
 	+ CPU Freq
 
@@ -90,11 +83,36 @@ the corresponding h/w features exist.
 The following features are not supported and validated:
 
 	x SmartReflex: AM33xx SmartReflex doesn't work due to HW issue
+	x WiFi: TI WL12xx WLAN card via SDIO connector
+	x Bluetooth: HCI-UART
+
 
 4. BSP Notes
 ============
 
-4.1 TI AM335x SK
+4.1 TI AM335xEVM
+================
+
+The AM335x General Purpose EVM is a standalone test, development, and
+evaluation module system that enables developers to write software and
+develop hardware around an AM335x processor subsystem.
+
+For a full description of the AM335x EVM, please refer to the following link:
+
+	http://processors.wiki.ti.com/index.php/AM335x_General_Purpose_EVM_HW_User_Guide
+
+4.1.1 Validated Board Info
+--------------------------
+
+This BSP is only validated in following environment. If you use this BSP
+in a different environment it may possibly have some issues.
+
+	Processor:		AM335X ES1.0 (sgx neon)
+	Board Rev:		TI-AM335X EVM, CPU board REV 1.2A
+	BootLoader:		U-Boot
+	BootLoader Version:	U-Boot SPL 2017.01-g9fd60700db (Jun 28 2017 - 17:18:56)
+
+4.2 TI AM335x SK
 ================
 
 The AM335x Starter Kit (aka: AM335x SK) (TMDSSK3358) can be used as an
@@ -105,21 +123,56 @@ For a full description of the AM335x Starter Kit, please refer to the following 
 
 	http://processors.wiki.ti.com/index.php/AM335xStarterKitHardwareUsersGuide
 
-4.1.1 Validated Board Info
+4.2.1 Validated Board Info
 --------------------------
 
 This BSP is only validated in the following environment. If you use this
 BSP in a different environment it may possibly have some issues.
 
-	Processor:		TI-AM335X CPU board REV 1.2B
+	Processor:		AM335X ES1.0 (sgx neon)
+	Board Rev:		CPU board REV 1.2B
 	BootLoader:		U-Boot
 	BootLoader Version:	U-Boot SPL 2017.01-g9fd60700db (Jun 28 2017 - 17:18:56)
 
-4.1.2 Bluetooth
----------------
+4.3 Hardware profile settings for AM335X-EVM
+============================================
 
-Currently, this function has a limited support since there is a big gap between
-driver and bluetooth proto, and TI has claimed this module has been dropped.
+This EVM has many different subsystems to allow development around the AM335x's
+capabilities. Most of the subsystems are fixed with regard to address locations
+and pin assignments. However, there are some functions that can be changed by
+configuring the EVM with switches, which some of the AM335x pins are connected
+to different subsystems based on this CPLD profile. And the CPLD profile number
+is selected by a 4bit DIP switch(sw8) on the GP daughterboard.
 
-Please refer to the following TI Link for more information:
-http://e2e.ti.com/support/wireless_connectivity/wilink_wifi_bluetooth/f/307/t/634587
+Currently, only profile #0 and #1 are validated.
+
+Please refer to the following link for more information:
+  http://processors.wiki.ti.com/index.php/AM335x_General_Purpose_EVM_HW_User_Guide
+
+4.4 DEBUGSS clock in no idle
+============================
+
+DEBUGSS will always be stuck in transition status whenever clocks are cut to
+DEBUGSS. And it had been confirmed by the verndor hardware team it was a bug
+in silicon that clocks could not be cut to DEBUGSS.
+
+Please refer to the following link for more information:
+  http://e2e.ti.com/support/arm/sitara_arm/f/791/p/713673/2630986
+
+4.5 SRAM notes
+==============
+
+SRAM is partly used to save/restore memory controller registers and PM voltages
+scale data by gen_pool method, and the system might go crash if these data are
+damaged.
+
+So please be aware of the following default status:
+  * ) These PM-related SRAM data should not be corrupted
+  * ) Please refer to gen_pool when you want to append in your application data.
+
+4.6 Wireless and Bluetooth
+==========================
+
+Currently, wl127x module had been dropped from SDK from the last version, so it
+is not supported since it is hardly possible to debug an extra-hardware module
+if something goes wrong.
