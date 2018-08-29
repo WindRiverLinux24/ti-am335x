@@ -1,7 +1,9 @@
 DEFAULTTUNE ?= "cortexa8thf-neon"
 require conf/machine/include/tune-cortexa8.inc
 
-MACHINE_FEATURES += "usbhost jffs2 ext2 screen alsa vfat"
+MACHINE_FEATURES += "usbhost jffs2 ext2 screen alsa"
+
+DISTRO_FEATURES_append = " vfat wifi bluetooth"
 
 KERNEL_IMAGETYPE = "zImage"
 KERNEL_DEVICETREE_ti-am335x = "am335x-evm.dtb am335x-evmsk.dtb"
