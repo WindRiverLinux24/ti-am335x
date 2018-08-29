@@ -7,6 +7,7 @@ linux-firmware \
 omapdrm-pvr \
 pm-utils \
 ptpd \
+uim \
 "
 
 IMAGE_INSTALL += "${@bb.utils.contains('MACHINE', 'ti-am335x', '${TI-AM335X-IMAGE-INSTALL}', '', d)}"
