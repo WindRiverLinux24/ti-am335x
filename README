@@ -31,7 +31,7 @@ Copyright (C) 2018 Wind River Systems, Inc.
 
 The right to copy, distribute or otherwise make use of this software may
 be licensed only pursuant to the terms of an applicable Wind River license
-agreement. No license to Wind River intellectual properly rights is granted
+agreement. No license to Wind River intellectual property rights is granted
 herein. All rights not licensed by Wind River are reserved by Wind River.
 
 Source code included in tree for individual recipes is under the LICENSE
@@ -92,9 +92,7 @@ network values.
 4.2 Rootfs on MMC/SD
 --------------------
 
-An ext2/ext3 filesystem can be created on the MMC/SD using standard
-techniques. The device appears as /dev/mmcblk0 and the first partition
-will appear as /dev/mmcblk0p1.
+An ext3/ext4 filesystem can be created on the MMC/SD using standard techniques.
 
 4.2.1 Deployment
 ----------------
@@ -127,21 +125,19 @@ openssl without cryptodev:
 	  3s on 256 size blocks: 282339 aes-128-cbc's in 3.00s
 	  3s on 1024 size blocks: 71710 aes-128-cbc's in 3.00s
 	  3s on 8192 size blocks: 9005 aes-128-cbc's in 3.00s
-	  OpenSSL 1.0.1e 11 Feb 2013
-	  built on: Wed Mar 12 11:58:49 CST 2017
+	  OpenSSL 1.0.2o  27 Mar 2018
 
 openssl with cryptodev:
 
 	# modprobe cryptodev
-	  cryptodev: driver 1.6 loaded.
+	  cryptodev: driver 1.9 loaded.
         # openssl speed -evp aes-128-cbc
  	  3s on 16 size blocks: 43127 aes-128-cbc's in 0.02s
  	  3s on 64 size blocks: 34100 aes-128-cbc's in 0.11s
  	  3s on 256 size blocks: 27633 aes-128-cbc's in 0.06s
  	  3s on 1024 size blocks: 19539 aes-128-cbc's in 0.04s
  	  3s on 8192 size blocks: 6836 aes-128-cbc's in 0.02s
- 	  OpenSSL 1.0.1e 11 Feb 2013
- 	  built on: Wed Mar 12 11:58:49 CST 2016
+	  OpenSSL 1.0.2o  27 Mar 2018
 
 5.1.2 Target Notes
 ------------------

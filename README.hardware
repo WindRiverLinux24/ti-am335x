@@ -44,7 +44,7 @@ the corresponding h/w features exist.
 
   o Storage
 	+ NAND 256MB Micron MT29F2G08ABAEAWP NAND (EVM only)
-	+ SRAM for Voltage Scale Usage and Save/Restor for momory registers when System idle.
+	+ SRAM for Voltage Scale Usage and Save/Restore for momory registers when System idle.
 	+ MUSB High-speed dual-role controller, high/full/low speed for host, high/full speed for gadget
 	+ SD/MMC: OMAP High-Speed SD/MMC controller
 
@@ -110,7 +110,7 @@ in a different environment it may possibly have some issues.
 	Processor:		AM335X ES1.0 (sgx neon)
 	Board Rev:		TI-AM335X EVM, CPU board REV 1.2A
 	BootLoader:		U-Boot
-	BootLoader Version:	U-Boot SPL 2017.01-g9fd60700db (Jun 28 2017 - 17:18:56)
+	BootLoader Version:	U-Boot SPL 2017.01
 
 4.2 TI AM335x SK
 ================
@@ -132,7 +132,7 @@ BSP in a different environment it may possibly have some issues.
 	Processor:		AM335X ES1.0 (sgx neon)
 	Board Rev:		CPU board REV 1.2B
 	BootLoader:		U-Boot
-	BootLoader Version:	U-Boot SPL 2017.01-g9fd60700db (Jun 28 2017 - 17:18:56)
+	BootLoader Version:	U-Boot SPL 2017.01
 
 4.3 Hardware profile settings for AM335X-EVM
 ============================================
@@ -153,7 +153,7 @@ Please refer to the following link for more information:
 ============================
 
 DEBUGSS will always be stuck in transition status whenever clocks are cut to
-DEBUGSS. And it had been confirmed by the verndor hardware team it was a bug
+DEBUGSS. It had been confirmed by the vendor hardware team that it was a bug
 in silicon that clocks could not be cut to DEBUGSS.
 
 Please refer to the following link for more information:
