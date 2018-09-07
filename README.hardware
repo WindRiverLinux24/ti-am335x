@@ -39,8 +39,10 @@ the corresponding h/w features exist.
 	+ SPI: OMAP McSPI bus controller in master mode
 
   o Network
+	+ Bluetooth: HCI-UART
 	+ CAN: Bosch D_CAN controller (EVM only in profile #1)
 	+ Ethernet: AM335xEVM-SK: CPSW 10/100 Mb Ethernet controller
+	+ WiFi: TI WL12xx WLAN card via SDIO connector
 
   o Storage
 	+ NAND 256MB Micron MT29F2G08ABAEAWP NAND (EVM only)
@@ -83,8 +85,6 @@ the corresponding h/w features exist.
 The following features are not supported and validated:
 
 	x SmartReflex: AM33xx SmartReflex doesn't work due to HW issue
-	x WiFi: TI WL12xx WLAN card via SDIO connector
-	x Bluetooth: HCI-UART
 
 
 4. BSP Notes
@@ -167,12 +167,14 @@ scale data by gen_pool method, and the system might go crash if these data are
 damaged.
 
 So please be aware of the following default status:
-  * ) These PM-related SRAM data should not be corrupted
+  * ) These PM-related SRAM data should not be corrupted.
   * ) Please refer to gen_pool when you want to append in your application data.
 
-4.6 Wireless and Bluetooth
-==========================
+4.6 Wireless and Bluetooth AS-IS
+================================
 
-Currently, wl127x module had been dropped from SDK from the last version, so it
-is not supported since it is hardly possible to debug an extra-hardware module
-if something goes wrong.
+Currently, wl127x module had been dropped from SDK in the latest version, so it
+is possible that not all commands are compatible with the current WiFi protocol
+and not easy to debug this module if something goes wrong since there is not so
+much doc available. But it seems they are stable on these version hardware sets
+listed above based on our testing result.
