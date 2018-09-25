@@ -22,8 +22,8 @@ This BSP supports the following boards:
 2. Change History
 =================
 
-  - 2018/08 (US114189): WRLinux 10.17.41 RCPL11, add TI AM335x evm/sk support
-			based on ti-processor-sdk-linux-am335x-evm-04.00.00.04
+  - 2018/08 (US114189): WRLinux 10.17.41 RCPL12, add TI AM335x evm/sk support
+			based on ti-processor-sdk-linux-am335x-evm-04.03.00.05
 
 3. BSP Features
 ===============
