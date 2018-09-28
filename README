@@ -92,7 +92,7 @@ network values.
 4.2 Rootfs on MMC/SD
 --------------------
 
-An ext3/ext4 filesystem can be created on the MMC/SD using standard techniques.
+An ext4 filesystem can be created on the MMC/SD using standard techniques.
 
 4.2.1 Deployment
 ----------------
@@ -421,12 +421,12 @@ Before the below steps, please umount all your live mmc filesystem.
 We are aware of some wlcore mismatch WARNINGs in boottime and benign & active
 calltrace will show up during mem suspending from a live wlan. We'll keep and
 leave them to warn our customers if their real app scenario shows or needs to
-mute them. Actually it's easy to do that. Of course, the susupend process can
+mute them. Actually it's easy to do that. Of course, the suspend process can
 still be finished normally.
 
 Make sure your root filesystem is always online while any network operations.
 
 Make sure the match between firmware version and your HD wireless module, and
-rfkill set is right for wlan. The default firmare is wl127x with 6.3.10.0.142,
-but unlucky, it has been dropped in the latest SDK, please contact your board
+rfkill set is right for wlan. The default firmware version is 6.3.10.0.142.
+But unlucky, it has been dropped in the latest SDK, please contact your board
 vendor for more information.
