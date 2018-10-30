@@ -6,7 +6,6 @@ i2c-tools \
 linux-firmware \
 omapdrm-pvr \
 pm-utils \
-ptpd \
 uim \
 "
 
