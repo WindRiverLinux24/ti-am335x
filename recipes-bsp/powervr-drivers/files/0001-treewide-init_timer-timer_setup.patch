@@ -1,0 +1,51 @@
+From 442cbe6eeb92219daeaa4d367882b0e4bc3fe42d Mon Sep 17 00:00:00 2001
+From: Zumeng Chen <zumeng.chen@windriver.com>
+Date: Sun, 30 Sep 2018 09:34:37 +0800
+Subject: [PATCH 1/1] treewide: init_timer() -> timer_setup()
+
+This mechanically converts all remaining cases of ancient open-coded timer
+setup with the old setup_timer() API, which is the first step in timer
+conversions. This has no behavioral changes, since it ultimately just
+changes the order of assignment to fields of struct timer_list when
+finding variations of:
+
+    init_timer(&t);
+    f.function = timer_callback;
+    t.data = timer_callback_arg;
+
+to be converted into:
+
+    timer_setup(&t, timer_callback, timer_callback_arg);
+
+Upstream-Status: Inappropriate [No upstream]
+
+Signed-off-by: Zumeng Chen <zumeng.chen@windriver.com>
+---
+ eurasia_km/services4/srvkm/env/linux/osfunc.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/eurasia_km/services4/srvkm/env/linux/osfunc.c b/eurasia_km/services4/srvkm/env/linux/osfunc.c
+index 02dfe9b..fe85976 100644
+--- a/eurasia_km/services4/srvkm/env/linux/osfunc.c
++++ b/eurasia_km/services4/srvkm/env/linux/osfunc.c
+@@ -2886,14 +2886,10 @@ IMG_HANDLE OSAddTimer(PFN_TIMER_FUNC pfnTimerFunc, IMG_VOID *pvData, IMG_UINT32
+     psTimerCBData->ui32Delay = ((HZ * ui32MsTimeout) < 1000)
+                                 ?	1
+                                 :	((HZ * ui32MsTimeout) / 1000);
+-    /* initialise object */
+-    init_timer(&psTimerCBData->sTimer);
+-    
+-    /* setup timer object */
++    /* initialise object, setup timer object */
+     /* PRQA S 0307,0563 1 */ /* ignore warning about inconpartible ptr casting */
+-    psTimerCBData->sTimer.function = (IMG_VOID *)OSTimerCallbackWrapper;
+-    psTimerCBData->sTimer.data = (IMG_UINTPTR_T)psTimerCBData;
+-    
++    timer_setup(&psTimerCBData->sTimer, (IMG_VOID *)OSTimerCallbackWrapper, (IMG_UINTPTR_T)psTimerCBData);
++
+     return (IMG_HANDLE)(ui + 1);
+ }
+ 
+-- 
+2.7.4
+

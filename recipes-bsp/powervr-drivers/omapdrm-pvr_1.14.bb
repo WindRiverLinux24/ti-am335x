@@ -3,6 +3,8 @@ HOMEPAGE = "https://git.ti.com/graphics/omap5-sgx-ddk-linux"
 LICENSE = "MIT | GPLv2"
 LIC_FILES_CHKSUM = "file://eurasia_km/README;beginline=13;endline=22;md5=74506d9b8e5edbce66c2747c50fcef12"
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+
 inherit module
 
 COMPATIBLE_MACHINE = "ti-am335x"
@@ -14,7 +16,9 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 BRANCH = "ti-img-sgx/1.14.3699939/k4.14"
 
-SRC_URI = "git://git.ti.com/graphics/omap5-sgx-ddk-linux.git;protocol=git;branch=${BRANCH}"
+SRC_URI = "git://git.ti.com/graphics/omap5-sgx-ddk-linux.git;protocol=git;branch=${BRANCH} \
+	   file://0001-treewide-init_timer-timer_setup.patch \
+	  "
 
 S = "${WORKDIR}/git"
 
