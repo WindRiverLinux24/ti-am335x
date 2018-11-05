@@ -1,4 +1,4 @@
-        TI AM335x-EVM/SK Boards
+        TI AM335x-EVM/SK and BeagleBoneBlack Boards
 
 
 1. About this document
@@ -107,6 +107,48 @@ After loading the kernel, pass kernel arguments like following:
 Please set the right /dev/mmcblkXpX according to your real app scenario, then
 rootfs will be correctly mounted.
 
+4.2.3 WIC
+---------
+
+User can use the OpenEmbedded Image Creator to create the properly partitioned
+image on a SD card. It generates partitioned images from existing OpenEmbedded
+build artifacts. Please refer to the following URL for more detailed partition
+information about WIC:
+
+http://www.yoctoproject.org/docs/2.2/mega-manual/mega-manual.html#creating-partitioned-images
+
+After having built your project, a partitioned WIC image will be created in the
+deploy folder as follows:
+
+  path_to_your_project/build/tmp-glibc/deploy/images/ti-am335x/wrlinux-image-glibc-<rootfs_type>-ti-am335x.wic
+
+There are two partitions in this WIC images, the first one is to hold the boot
+images, the second is the related root file system.
+
+6.1 An example to deploy bootloader into the first partition
+------------------------------------------------------------
+
+1) Deploy the created WIC image into SD card(/dev/sdx) in your host machine.
+
+   $ sudo dd if=wrlinux-image-glibc-<rootfs_type>-ti-am335x.wic of=/dev/sdx
+
+2) Deploy your own MLO and u-boot.img into this /dev/sdx1
+
+   $ sudo mount /dev/sdx1 path_to_sdx1
+   $ cp -r path_to_your_bootloader/MLO path_to_sdx1
+   $ cp -r path_to_your_bootloader/u-boot.img path_to_sdx1
+   $ sync; sudo umount path_to_sdx1
+
+6.2 boot the board from the WIC SD card
+---------------------------------------
+
+Insert the SD card into the board and select this SD card as the boot device.
+Then set the proper u-boot environment parameters to boot the board like the
+following steps:
+
+   $ setenv bootargs console=ttyS0,115200n8 root=/dev/mmcblk0p2 rw rootwait ip=dhcp
+   $ fatload mmc 0 0x82000000 zImage; fatload mmc 0 0x80005000 am335x-boneblack.dtb; bootz 0x82000000 - 0x80005000
+
 
 5. Features Notes
 =================
@@ -125,7 +167,6 @@ openssl without cryptodev:
 	  3s on 256 size blocks: 282339 aes-128-cbc's in 3.00s
 	  3s on 1024 size blocks: 71710 aes-128-cbc's in 3.00s
 	  3s on 8192 size blocks: 9005 aes-128-cbc's in 3.00s
-	  OpenSSL 1.0.2o  27 Mar 2018
 
 openssl with cryptodev:
 
@@ -137,7 +178,6 @@ openssl with cryptodev:
  	  3s on 256 size blocks: 27633 aes-128-cbc's in 0.06s
  	  3s on 1024 size blocks: 19539 aes-128-cbc's in 0.04s
  	  3s on 8192 size blocks: 6836 aes-128-cbc's in 0.02s
-	  OpenSSL 1.0.2o  27 Mar 2018
 
 5.1.2 Target Notes
 ------------------
@@ -369,7 +409,7 @@ reboot by the following commands:
 
 	# rfkill unblock wlan
 	# ifconfig wlan0 up
-	# iwlist  wlan0  scanning
+	# iw dev wlan0 scan
 	# killall wpa_supplicant
 	# wpa_supplicant -iwlan0 -B  -c /etc/wpa_supplicant.conf
 

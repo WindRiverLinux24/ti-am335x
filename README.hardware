@@ -1,4 +1,4 @@
-		TI AM335X EVM/SK Board Support Package
+		TI AM335X EVM/SK and BeagleBone Black Support Package
 
 
 Table of Contents
@@ -17,6 +17,7 @@ This BSP supports the following boards:
 
   + TI AM335x EVM          : AM335x processor, REV 1.2A SKU#01 CPU Board.
   + TI AM335x SK           : AM335x processor, REV 1.2B CPU Board.
+  + BeagleBone Black:	   : AM335x processor, RevC board.
 
 
 2. Change History
@@ -39,12 +40,13 @@ the corresponding h/w features exist.
 	+ SPI: OMAP McSPI bus controller in master mode
 
   o Network
-	+ Bluetooth: HCI-UART
+	+ Bluetooth: HCI-UART (EVM/SK only)
 	+ CAN: Bosch D_CAN controller (EVM only in profile #1)
-	+ Ethernet: AM335xEVM-SK: CPSW 10/100 Mb Ethernet controller
-	+ WiFi: TI WL12xx WLAN card via SDIO connector
+	+ Ethernet: CPSW 10/100 Mb Ethernet controller
+	+ WiFi: TI WL12xx WLAN card via SDIO connector (EVM/SK only)
 
   o Storage
+	+ EMMC: 4GB KE4CN2H5A (BBB only)
 	+ NAND 256MB Micron MT29F2G08ABAEAWP NAND (EVM only)
 	+ SRAM for Voltage Scale Usage and Save/Restore for momory registers when System idle.
 	+ MUSB High-speed dual-role controller, high/full/low speed for host, high/full speed for gadget
@@ -52,9 +54,10 @@ the corresponding h/w features exist.
 
   o User_Interface_Multimedia
 	+ AUDIO: AM33xx SoC Audio Controller
+	+ HDMI: TDA19988 HDMI framer
 	+ Keypad: GPIO driven matrix keypad
+	+ LCD: SOC WXGA LCD controller, Frame Buffer with OMAP DSS support
 	+ Touchscreen: AM335x SoC 4/5/8 wire touchscreen controller connected to ADC controller
-	+ LCD: AM335x SoC LCD controller, Frame Buffer with OMAP DSS support
 	+ SGX: The 2D/3D graphics accelerator (SGX) based on the POWERVR core
 
   o Power Mgmt
@@ -63,7 +66,7 @@ the corresponding h/w features exist.
 	+ CPU Freq
 
   o HW_Offload
-	+ AM335xEVM-SK: AM335x SoC H/W AES/SHA Crypto Engine
+	+ AM335x: AM335x SoC H/W AES/SHA Crypto Engine
 
   o Misc Devices
 	+ UART: OMAP On-Chip High-Speed UART
@@ -77,6 +80,7 @@ the corresponding h/w features exist.
 		+ STMicro LIS3LV02Dx three-axis digital I2C accelerometer
 	+ Power Regulator:
 		+ AM335xEVM-SK: TI TPS65910Ax PMIC Power Regulator
+		+ BBB: TI PS65217C PMIC Power Regulator
 
 
 3.2 Unsupported Features
@@ -110,7 +114,7 @@ in a different environment it may possibly have some issues.
 	Processor:		AM335X ES1.0 (sgx neon)
 	Board Rev:		TI-AM335X EVM, CPU board REV 1.2A
 	BootLoader:		U-Boot
-	BootLoader Version:	U-Boot SPL 2017.01
+	BootLoader Version:	U-Boot SPL 2018.01
 
 4.2 TI AM335x SK
 ================
@@ -132,9 +136,27 @@ BSP in a different environment it may possibly have some issues.
 	Processor:		AM335X ES1.0 (sgx neon)
 	Board Rev:		CPU board REV 1.2B
 	BootLoader:		U-Boot
-	BootLoader Version:	U-Boot SPL 2017.01
+	BootLoader Version:	U-Boot SPL 2018.01
 
-4.3 Hardware profile settings for AM335X-EVM
+
+4.3 BeagleBoneBlack(BBB)
+========================
+
+The BeagleBone Black is a lower-cost, high-expansion focused BeagleBoard using a
+low cost Sitara AM3358BZCZ100 Cortex A8 ARM processor from Texas Instruments.
+
+For a full description of BBB, please refer to the following link:
+  http://beagleboard.org/getting-started
+
+4.3.1 Validated Board Info
+--------------------------
+
+	Processor:		AM335X ES1.0 (sgx neon)
+	Board Rev:		RevC
+	BootLoader:		U-Boot
+	BootLoader Version:	U-Boot SPL 2018.01
+
+4.4 Hardware profile settings for AM335X-EVM
 ============================================
 
 This EVM has many different subsystems to allow development around the AM335x's
@@ -149,7 +171,7 @@ Currently, only profile #0 and #1 are validated.
 Please refer to the following link for more information:
   http://processors.wiki.ti.com/index.php/AM335x_General_Purpose_EVM_HW_User_Guide
 
-4.4 DEBUGSS clock in no idle
+4.5 DEBUGSS clock in no idle
 ============================
 
 DEBUGSS will always be stuck in transition status whenever clocks are cut to
@@ -159,7 +181,7 @@ in silicon that clocks could not be cut to DEBUGSS.
 Please refer to the following link for more information:
   http://e2e.ti.com/support/arm/sitara_arm/f/791/p/713673/2630986
 
-4.5 SRAM notes
+4.6 SRAM notes
 ==============
 
 SRAM is partly used to save/restore memory controller registers and PM voltages
@@ -170,7 +192,7 @@ So please be aware of the following default status:
   * ) These PM-related SRAM data should not be corrupted.
   * ) Please refer to gen_pool when you want to append in your application data.
 
-4.6 Wireless and Bluetooth AS-IS
+4.7 Wireless and Bluetooth AS-IS
 ================================
 
 Currently, wl127x module had been dropped from SDK in the latest version, so it
