@@ -31,4 +31,5 @@ PREFERRED_PROVIDER_virtual/egl_ti-am335x = "ti-sgx-ddk-um"
 PREFERRED_PROVIDER_virtual/libgles1_ti-am335x = "ti-sgx-ddk-um"
 PREFERRED_PROVIDER_virtual/libgles2_ti-am335x = "ti-sgx-ddk-um"
 
+PREFERRED_PROVIDER_virtual/kernel ??= "linux-yocto"
 PREFERRED_VERSION_linux-yocto ?= "4.18%"
