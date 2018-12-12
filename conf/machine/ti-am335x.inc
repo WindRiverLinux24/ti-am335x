@@ -33,3 +33,8 @@ PREFERRED_PROVIDER_virtual/libgles2_ti-am335x = "ti-sgx-ddk-um"
 
 PREFERRED_PROVIDER_virtual/kernel ??= "linux-yocto"
 PREFERRED_VERSION_linux-yocto ?= "4.18%"
+
+PNBLACKLIST[piglit] ?= "LIN1018-3094: do_compile failed due to the different EGL version"
+PNBLACKLIST[kmscube] ?= "LIN1018-3094: do_compile failed due to the different gbm version"
+PNBLACKLIST[weston] ?= "LIN1018-3094: do_compile failed due to the different gbm version"
+PNBLACKLIST[weston-init] ?= "LIN1018-3094: do_compile failed due to the different gbm version"
