@@ -18,3 +18,5 @@ SRC_URI = "git://git.ti.com/glsdk/libgbm.git;protocol=git;branch=${BRANCH} \
 	   file://0001-remove-this-unused-function.patch "
 
 S = "${WORKDIR}/git"
+
+PROVIDES += "virtual/libgbm"
