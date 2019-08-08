@@ -15,26 +15,3 @@ WKS_FILE ?= "am335x-sdimage.wks"
 do_image_wic[depends] += " mtools-native:do_populate_sysroot dosfstools-native:do_populate_sysroot"
 IMAGE_BOOT_FILES ?= " zImage am335x-evm.dtb am335x-evmsk.dtb am335x-boneblack.dtb "
 
-PREFERRED_PROVIDER_virtual/xserver = "xserver-xorg"
-
-XSERVER = "xserver-xorg \
-           xf86-input-evdev \
-           xf86-input-mouse \
-           xf86-video-fbdev \
-           xf86-input-keyboard"
-
-PREFERRED_PROVIDER_libgbm = "libgbm"
-PREFERRED_PROVIDER_libgbm-dev = "libgbm-dev"
-PREFERRED_PROVIDER_virtual/libgl = "mesa-gl"
-PREFERRED_PROVIDER_virtual/mesa = "mesa-gl"
-PREFERRED_PROVIDER_virtual/egl_ti-am335x = "ti-sgx-ddk-um"
-PREFERRED_PROVIDER_virtual/libgles1_ti-am335x = "ti-sgx-ddk-um"
-PREFERRED_PROVIDER_virtual/libgles2_ti-am335x = "ti-sgx-ddk-um"
-
-PREFERRED_PROVIDER_virtual/kernel ??= "linux-yocto"
-PREFERRED_VERSION_linux-yocto ?= "4.18%"
-
-PNBLACKLIST[piglit] ?= "LIN1018-3094: do_compile failed due to the different EGL version"
-PNBLACKLIST[kmscube] ?= "LIN1018-3094: do_compile failed due to the different gbm version"
-PNBLACKLIST[weston] ?= "LIN1018-3094: do_compile failed due to the different gbm version"
-PNBLACKLIST[weston-init] ?= "LIN1018-3094: do_compile failed due to the different gbm version"

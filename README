@@ -20,14 +20,14 @@ information on submitting changes.
 
 
 Building the ti-am335x layer
----------------------------
+----------------------------
 This layer and wr-kernel layer should be added to bblayers.conf. This
 is done automatically when using the Wind River configure wrapper.
 
 
 License
 -------
-Copyright (C) 2018 Wind River Systems, Inc.
+Copyright (C) 2018-2019 Wind River Systems, Inc.
 
 Source code included in the tree for individual recipes is under the LICENSE
 stated in the associated recipe (.bb file) unless otherwise stated.
@@ -72,15 +72,16 @@ Note: The preempt-rt ktype is not available for this BSP/Machine at this time.
 
 3. Board Specific Patches
 =========================
+
 To get a list of patches applied to the kernel specific to this BSP,
 along with patch descriptions, use git to see what changed on the default
 kernel (git whatchanged <kernel_type>..<bsp_name>). For example:
 
-	# cd tmp-glibc/work-shared/ti-am335x/kernel-source
-	# git whatchanged standard/base..
+	# cd path_to_project/tmp-glibc/work-shared/ti-am335x/kernel-source
+	# git whatchanged standard/base..HEAD
 
 
-4 Boot Instructions
+4. Boot Instructions
 ====================
 
 4.1 NFS Root File System
@@ -121,15 +122,15 @@ After loading the kernel, pass kernel arguments like following:
 Please set the right /dev/mmcblkXpX according to your real app scenario, then
 rootfs will be correctly mounted.
 
-4.2.3 WIC
----------
+5. WIC Notes
+============
 
 User can use the OpenEmbedded Image Creator to create the properly partitioned
 image on a SD card. It generates partitioned images from existing OpenEmbedded
 build artifacts. Please refer to the following URL for more detailed partition
 information about WIC:
 
-http://www.yoctoproject.org/docs/2.2/mega-manual/mega-manual.html#creating-partitioned-images
+https://www.yoctoproject.org/docs/2.6/mega-manual/mega-manual.html#creating-partitioned-images-using-wic
 
 After having built your project, a partitioned WIC image will be created in the
 deploy folder as follows:
@@ -139,7 +140,7 @@ deploy folder as follows:
 There are two partitions in this WIC images, the first one is to hold the boot
 images, the second is the related root file system.
 
-6.1 An example to deploy bootloader into the first partition
+5.1 An example to deploy bootloader into the first partition
 ------------------------------------------------------------
 
 1) Deploy the created WIC image into SD card(/dev/sdx) in your host machine.
@@ -153,334 +154,12 @@ images, the second is the related root file system.
    $ cp -r path_to_your_bootloader/u-boot.img path_to_sdx1
    $ sync; sudo umount path_to_sdx1
 
-6.2 boot the board from the WIC SD card
----------------------------------------
+5.2 Boot the board from the WIC SD card
 
+---------------------------------------
 Insert the SD card into the board and select this SD card as the boot device.
 Then set the proper u-boot environment parameters to boot the board like the
 following steps:
 
    $ setenv bootargs console=ttyS0,115200n8 root=/dev/mmcblk0p2 rw rootwait ip=dhcp
    $ fatload mmc 0 0x82000000 zImage; fatload mmc 0 0x80005000 am335x-boneblack.dtb; bootz 0x82000000 - 0x80005000
-
-
-5. Features Notes
-=================
-
-5.1 Crypto engine
------------------
-
-5.1.1 Usage and verification
-----------------------------
-
-openssl without cryptodev:
-
-	# openssl speed -evp aes-128-cbc
-	  3s on 16 size blocks: 3506326 aes-128-cbc's in 3.00s
-  	  3s on 64 size blocks: 1060720 aes-128-cbc's in 3.00s
-	  3s on 256 size blocks: 282339 aes-128-cbc's in 3.00s
-	  3s on 1024 size blocks: 71710 aes-128-cbc's in 3.00s
-	  3s on 8192 size blocks: 9005 aes-128-cbc's in 3.00s
-
-openssl with cryptodev:
-
-	# modprobe cryptodev
-	  cryptodev: driver 1.9 loaded.
-        # openssl speed -evp aes-128-cbc
- 	  3s on 16 size blocks: 43127 aes-128-cbc's in 0.02s
- 	  3s on 64 size blocks: 34100 aes-128-cbc's in 0.11s
- 	  3s on 256 size blocks: 27633 aes-128-cbc's in 0.06s
- 	  3s on 1024 size blocks: 19539 aes-128-cbc's in 0.04s
- 	  3s on 8192 size blocks: 6836 aes-128-cbc's in 0.02s
-
-5.1.2 Target Notes
-------------------
-
-make sure openssl is right for ioctl.
-
-5.2 Audio
----------
-
-5.2.1 Usage and verification
-----------------------------
-
-	# amixer cset name='PGA Capture Volume' 80%,80%
-	# amixer cset name='PCM Playback Volume' 80%,80%
-	# arecord -Dhw:0,0 -f S16_LE -r8000 -c2 -v sample.wav
-	# aplay sample.wav
-
-5.2.2 Target Notes
-------------------
-
-There is no in-line or mic output pin for SK board, and profile #0 for only EVM.
-
-5.3 PM suspend
---------------
-
-5.3.1 Usage and verification
-----------------------------
-
-	# echo standby > /sys/power/state
-	# echo mem > /sys/power/state
-
-5.3.2 Target Notes
-------------------
-
-Wakeup resources:
-
-  ti-am335x: tsc, uart0, and, gpio0(SK).
-  freeze listed, but not a default functional suspend for all arm platform.
-
-
-5.4 PM cpufreq
---------------
-
-5.4.1 Usage and verification
-----------------------------
-
-  cpufreq:
-
-    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
-    conservative ondemand userspace powersave performance
-    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
-    720000
-    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
-    275000 500000 600000 720000
-    # echo 275000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
-    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
-    275000
-
-5.4.1 Note
-----------
-
-CPUFreq can only be tested by userspace mode.
-
-
-5.5 PM CPU idle
----------------
-
-5.5.1 Usage and verification
-----------------------------
-
-There are two states for ti-am335x, which are C0, C1 as follows:
-
-root@localhost:/sys/devices/system/cpu/cpu0/cpuidle# ls -lR
-.:
-total 0
-drwxr-xr-x 2 root root 0 Mar 12 00:46 state0
-drwxr-xr-x 2 root root 0 Mar 12 00:46 state1
-
-
-They can be disabled by echo 1 > disable as follows:
-
-root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# cat disable
-0
-root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# echo 1 > disable
-root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# cat disable
-1
-
-5.5.1 Note
-----------
-
-Since DDR2 is deprecated currently, C2 SR has been removed from SDK. So there
-are only two idle states in the latest SDK.
-
-5.6 Touch Screen
-----------------
-
-5.6.1 Usage and verification
-----------------------------
-
-Touch screen calibration will be done when boot, and there is also a program
-in desktop when matchbox starts.
-
-5.7 Watchdog
-------------
-
-5.7.1 Usage and verification
------------------------------
-
-	# echo 1 > /dev/watchdog
-
-5.8 USB
--------
-
-5.8.1 Usage and verification
-----------------------------
-
-Host mode is OK as-is, the following example for device mode:
-	# modprobe g_multi "file=/dev/mmcblk0p1"
-
-5.8.2 note
-----------
-The status host/gadget of USB are OK on both EVM and SK.
-
-5.9 PWMSS
-----------
-
-5.9.1 Usage and verification
------------------------------
-	The lcd brightness is controlled by ecap.
-	the brightness will be changed:
-	# echo 0~8 > /sys/devices/platform/backlight/backlight/backlight/brightness
-
-5.10 DCAN
---------
-
-5.10.1 Usage and verification
-----------------------------
-
-	# ip link set can0 up type can bitrate 800000
-	  c_can_platform 481d0000.can can0: setting BTR=2a01 BRPE=0000
-          IPv6: ADDRCONF(NETDEV_CHANGE): can0: link becomes ready
-	# ip -details link show can0
-	# cansend can0 1F334455#1122334455667788
-	# ip link set can0 down
-
-5.10.2 Target Notes
-------------------
-
-This feature is only available in profile #1 of AM335X EVM with a general
-purpose daughter card according to EVM profile definition. Transceiver port
-on the daughter card is sw8 with the value of 1110, which means 2~4 ON and 1
-OFF. Please refer to the following link for more information:
-
-  http://processors.wiki.ti.com/index.php/AM335X_DCAN_Driver_Guide
-
-5.11 Graphics settings notes:
------------------------------
-
-There are two xorg.conf in recipes-graphics/xorg-xserver/files respectively for
-am335x-evm and am335x-evmsk, they will be installed into the /etc/X11/xorg.conf
-Generally speaking, they are the default reference design, but you need to make
-sure they match to your real application scenario if something goes wrong.
-And you always can easily find them by(Noise removed):
-
-	# cd /sys/devices
-	# find . -name '*event*'|grep input
-	 ./platform/lis3lv02d/input/input2/event2
-	 ./platform/ocp/44e0d000.tscadc/TI-am335x-tsc/input/input1/event1
-	 ./platform/matrix_keypad0/input/input0/event0
-
-Then edit /etc/X11/xorg.conf to match settings above, save and reboot.
-
-5.12 Graphics SGX
------------------
-
-Currently the third party lib are integrated partly, pvrsrvkm can be installed
-with wrlinux-std-sato distro, including a binary vendor demo module.
-
-5.12.1 Usage and verification for binary example & pvrsrvkm.ko
---------------------------------------------------------------
-
-	# depmod
-	# modprobe bc_example
-	# cat /proc/devices |grep bc_example
-	  245 bc_example
-	# ls /dev/bc_example  -l
-	  crw------- 1 root root 245, 0 Aug  2 02:18 /dev/bc_example
-
-5.12.2 Notes
-------------
-
-Generally speaking, xorg.conf is a very live configuration settings, which means
-there might be a different xorg.conf matching to the specific scenario even for
-the same board.
-There are two xorg configuration files in /etc/X11 for the reference design, the
-default xorg.conf is for am335x-evm, and another one for SK board, obviously you
-need to replace xorg.conf with xorg-sk.conf when your board is SK.
-
-5.13 Bluetooth & WLAN
----------------------
-
-5.13.1 Bluetooth usage and verification
----------------------------------------
-
-	# modprobe st_drv
-	# uim-sysfs start
-	# modprobe btwilink
-	# rfkill unblock bluetooth
-	# hciconfig hci0 up
-	# hcitool -i hci0 scan
-	Scanning ...
-		00:EC:0A:0B:C7:xx       nobody
-	        B8:8A:60:59:85:xx       PEK-XX
-
-5.13.2 Bluetooth Target Notes
------------------------------
-
-Make sure the match between firmware version and your HD bluetooth module, and
-the current version is TIInit_7.6.15.
-
-After machine suspend, like "echo mem > /sys/power/state", the bluetooth needs
-reboot by the following commands:
-
-	# hciconfig hci0 down
-	# hciconfig hci0 up
-
-5.13.3 WLAN Usage and verification
-----------------------------------
-
-	# rfkill unblock wlan
-	# ifconfig wlan0 up
-	# iw dev wlan0 scan
-	# killall wpa_supplicant
-	# wpa_supplicant -iwlan0 -B  -c /etc/wpa_supplicant.conf
-
-Generally speaking, wpa will automatically launch a new negotiation process when
-timeout. If wlan0 is finally failure on authentication and association, then try
-to do the following commands:
-
-	# killall wpa_supplicant
-	# ifconfig wlan0 down
-	# ifconfig wlan0  up
-	# wpa_supplicant -iwlan0 -B  -c /etc/wpa_supplicant.conf
-
-Be patient please until the following messages are shown:
-
-	wlcore: Association completed.
-	IPv6: ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
-
-Then you can get your IP from dchp servers by the command:
-	# dhclient wlan0
-	# ping -I wlan0 your_wifi_gatewayip
-
-Note:
-
-It seems current omap-hsmmc suspend logic has a conflict with wl12xx protocol
-by sdio, which means wlcore_sdio is not ready for suspend operation since dts
-related sleep pins are not availabe for wl127x from TI git repo.
-
-The suspend will stop WiFi modules when you take MMC card as root filesystem,
-As we observed, after machine suspend, the wlcore_sdio does not work properly
-any more due to illegal byte sequence(-84 returned) even if we re-install all
-wlcore related modules, and reboot board is the only way to get wlan0 back.
-
-Here is a workaround way to get them along with each other: Don't take MMC as
-your root filesystem, and do "bitbake -c menuconfig linux-yocto" to configure
-kernel config fragment MMC, MMC_BLOCK, MMC_OMAP_HS from "y" to "m" in project
-for re-deployment. Then the following steps can be taken to suspend:
-
-	# killall wpa_supplicant
-	# ifconfig wlan0 down
-	# rmmod wlcore_sdio wl12xx wlcore
-
-Before the below steps, please umount all your live mmc filesystem.
-
-	# rmmod omap_hsmmc mmc_block mmc_core
-	# echo mem > /sys/power/state
-	# modprobe omap_hsmmc wlcore_sdio
-	# ifconfig wlan0 up
-
-We are aware of some wlcore mismatch WARNINGs in boottime and benign & active
-calltrace will show up during mem suspending from a live wlan. We'll keep and
-leave them to warn our customers if their real app scenario shows or needs to
-mute them. Actually it's easy to do that. Of course, the suspend process can
-still be finished normally.
-
-Make sure your root filesystem is always online while any network operations.
-
-Make sure the match between firmware version and your HD wireless module, and
-rfkill set is right for wlan. The default firmware version is 6.3.10.0.142.
-But unlucky, it has been dropped in the latest SDK, please contact your board
-vendor for more information.
