@@ -4,4 +4,4 @@
 
 
 COMPATIBLE_MACHINE_ti-am335x = "ti-am335x"
-TARGET_SUPPORTED_KTYPES_ti-am335x = "standard preempt-rt"
+TARGET_SUPPORTED_KTYPES_ti-am335x = "standard"
