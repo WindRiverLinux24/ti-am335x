@@ -10,6 +10,8 @@ KERNEL_DEVICETREE_ti-am335x = "am335x-evm.dtb am335x-evmsk.dtb am335x-boneblack.
 
 SERIAL_CONSOLE = "115200 ttyS0"
 
+PREFERRED_PROVIDER_virtual/kernel ??= "linux-yocto"
+
 IMAGE_FSTYPES += "tar.bz2 wic wic.bmap"
 WKS_FILE ?= "am335x-sdimage.wks"
 do_image_wic[depends] += " mtools-native:do_populate_sysroot dosfstools-native:do_populate_sysroot"
