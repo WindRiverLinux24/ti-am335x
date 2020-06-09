@@ -37,9 +37,13 @@ the corresponding h/w features exist.
 
   o Bus
 	+ I2C: OMAP On-Chip I2C controller
+	+ SPI: OMAP McSPI bus controller in master mode
 
   o Network
 	+ Ethernet: CPSW 10/100 Mb Ethernet controller
+	+ Bluetooth: HCI-UART (EVM/SK only)
+	+ CAN: Bosch D_CAN controller (EVM only in profile #1)
+	+ WiFi: TI WL12xx WLAN card via SDIO connector (EVM/SK only)
 
   o Storage
 	+ EMMC: 4GB KE4CN2H5A (BBB only)
@@ -50,12 +54,31 @@ the corresponding h/w features exist.
 
   o User_Interface_Multimedia
 	+ Keypad: GPIO driven matrix keypad
+	+ LCD: SOC WXGA LCD controller, Frame Buffer with OMAP DSS support
+	+ AUDIO: AM33xx SoC Audio Controller
+	+ SGX: The 2D/3D graphics accelerator (SGX) based on the POWERVR core
+
+  o Power Mgmt
+	+ Suspend to RAM
+	+ CPU Idle
+	+ CPU Freq
+
+  o HW_Offload
+	+ AM335x: AM335x SoC H/W AES/SHA Crypto Engine
 
   o Misc Devices
 	+ UART: OMAP On-Chip High-Speed UART
 	+ Watchdog: OMAP On-Chip H/W Watchdog timer
 	+ GPIO: TI TPS65910 PMIC GPIO
 	+ RTC: OMAP RTC driver
+	+ EDMA: AM335x SoC EDMA engine
+	+ Sensors:
+		+ Taos TSL2550 ambient light sensor
+		+ TI TMP275 temperature sensor
+		+ STMicro LIS3LV02Dx three-axis digital I2C accelerometer
+	Power Regulator:
+		+ AM335xEVM-SK: TI TPS65910Ax PMIC Power Regulator
+		+ BBB: TI PS65217C PMIC Power Regulator
 
 3.2 Unsupported Features
 ========================
@@ -67,35 +90,9 @@ The following features are not supported and validated:
 	x Bus
 		- SPI: OMAP McSPI bus controller in master mode
 
-	x Network
-		- Bluetooth: HCI-UART (EVM/SK only)
-		- CAN: Bosch D_CAN controller (EVM only in profile #1)
-		- WiFi: TI WL12xx WLAN card via SDIO connector (EVM/SK only)
-
 	x User_Interface_Multimedia
-		- AUDIO: AM33xx SoC Audio Controller
 		- HDMI: TDA19988 HDMI framer
-		- LCD: SOC WXGA LCD controller, Frame Buffer with OMAP DSS support
 		- Touchscreen: AM335x SoC 4/5/8 wire touchscreen controller connected to ADC controller
-		- SGX: The 2D/3D graphics accelerator (SGX) based on the POWERVR core
-
-	x Power Mgmt
-		- Suspend to RAM
-		- CPU Idle
-		- CPU Freq
-
-	x HW_Offload
-		- AM335x: AM335x SoC H/W AES/SHA Crypto Engine
-
-	x Misc Devices
-		- EDMA: AM335x SoC EDMA engine
-		- Sensors:
-			- Taos TSL2550 ambient light sensor
-			- TI TMP275 temperature sensor
-			- STMicro LIS3LV02Dx three-axis digital I2C accelerometer
-		- Power Regulator:
-			- AM335xEVM-SK: TI TPS65910Ax PMIC Power Regulator
-			- BBB: TI PS65217C PMIC Power Regulator
 
 4. BSP Notes
 ============
