@@ -163,3 +163,142 @@ following steps:
 
    $ setenv bootargs console=ttyS0,115200n8 root=/dev/mmcblk0p2 rw rootwait ip=dhcp
    $ fatload mmc 0 0x82000000 zImage; fatload mmc 0 0x80005000 am335x-boneblack.dtb; bootz 0x82000000 - 0x80005000
+
+6. Features Notes
+=================
+
+6.1 Audio(only evmsk board)
+---------------------------
+
+6.1.1 Usage and verification
+----------------------------
+
+        # amixer cset name='PGA Capture Volume' 80%,80%
+        # amixer cset name='PCM Playback Volume' 80%,80%
+        # aplay -Dhw:0 /opt/wr-tes
+        # aplay sample.wav
+
+5.3 PM suspend
+--------------
+
+5.3.1 Usage and verification
+----------------------------
+
+        # echo standby > /sys/power/state
+        # echo mem > /sys/power/state
+
+5.4 PM CPU idle
+---------------
+
+5.4.1 Usage and verification
+----------------------------
+
+There are two states for ti-am335x, which are C0, C1 as follows:
+
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle# ls -lR
+.:
+total 0
+drwxr-xr-x 2 root root 0 Mar 12 00:46 state0
+drwxr-xr-x 2 root root 0 Mar 12 00:46 state1
+
+
+They can be disabled by echo 1 > disable as follows:
+
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# cat disable
+0
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# echo 1 > disable
+root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# cat disable
+1
+
+5.4.1 Note
+----------
+
+Since DDR2 is deprecated currently, C2 SR has been removed from SDK. So there
+are only two idle states in the latest SDK.
+
+5.5 Touch Screen
+----------------
+
+5.5.1 Usage and verification
+----------------------------
+
+Touch screen calibration will be done when boot, and there is also a program
+in desktop when matchbox starts.
+
+5.6 Watchdog
+------------
+
+5.6.1 Usage and verification
+-----------------------------
+
+        # echo 1 > /dev/watchdog
+
+5.7 USB
+-------
+
+5.7.1 Usage and verification
+----------------------------
+
+Host mode is OK as-is, the following example for device mode:
+        # modprobe g_multi "file=/dev/mmcblk0p1"
+
+5.7.2 note
+----------
+The status host/gadget of USB are OK on both EVM and SK.
+
+5.8 PWMSS
+---------
+
+5.8.1 Usage and verification
+-----------------------------
+        The lcd brightness is controlled by ecap.
+        the brightness will be changed:
+        # echo 0~8 > /sys/devices/platform/backlight/backlight/backlight/brightness
+
+5.9 DCAN
+--------
+
+5.9.1 Usage and verification
+----------------------------
+
+        # ip link set can0 up type can bitrate 800000
+          c_can_platform 481d0000.can can0: setting BTR=2a01 BRPE=0000
+          IPv6: ADDRCONF(NETDEV_CHANGE): can0: link becomes ready
+        # ip -details link show can0
+        # cansend can0 1F334455#1122334455667788
+        # ip link set can0 down
+
+5.9.2 Target Notes
+------------------
+
+This feature is only available in profile #1 of AM335X EVM with a general
+purpose daughter card according to EVM profile definition. Transceiver port
+on the daughter card is sw8 with the value of 1110, which means 2~4 ON and 1
+OFF. Please refer to the following link for more information:
+
+  http://processors.wiki.ti.com/index.php/AM335X_DCAN_Driver_Guide
+
+5.10 Bluetooth & WLAN
+---------------------
+
+5.10.1 Bluetooth usage and verification
+---------------------------------------
+
+        # hciconfig hci0 up
+        # hcitool -i hci0 scan
+        Scanning ...
+                00:EC:0A:0B:C7:xx       nobody
+                B8:8A:60:59:85:xx       PEK-XX
+
+5.10.2 Bluetooth Target Notes
+-----------------------------
+
+Make sure the match between firmware version and your HD bluetooth module, and
+the wl12xx version is TIInit_7.6.15, wl18xx version is TIInit_11.8.32.bts. You
+can get the firmware from https://git.ti.com/git/wilink8-bt/ti-bt-firmware.git
+Then put it under /lib/firmware/ti-connectivity/
+
+Then you can get your IP from dchp servers by the command:
+	# ifconfig wlan0 up
+        # dhclient wlan0
+        # ping -I wlan0 your_wifi_gatewayip
