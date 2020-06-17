@@ -187,6 +187,13 @@ following steps:
         # echo standby > /sys/power/state
         # echo mem > /sys/power/state
 
+5.3.1 Note
+----------
+
+am335x requires am335x-pm-firmware.elf firmware to support power management, you can
+download it from https://git.ti.com/git/processor-firmware/ti-amx3-cm3-pm-firmware.git
+and put it in /lib/firmware
+
 5.4 PM CPU idle
 ---------------
 
