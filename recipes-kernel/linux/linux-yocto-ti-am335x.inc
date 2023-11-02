@@ -5,7 +5,3 @@
 
 COMPATIBLE_MACHINE_ti-am335x = "ti-am335x"
 TARGET_SUPPORTED_KTYPES_ti-am335x = "standard"
-
-KERNEL_VERSION_SANITY_SKIP = "1"
-SRCREV_machine_ti-am335x ?= "${AUTOREV}"
-SRCREV_meta_ti-am335x ?= "${AUTOREV}"
