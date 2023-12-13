@@ -1,0 +1,1 @@
+COMPATIBLE_MACHINE:ti-am335x = "ti-am335x"
