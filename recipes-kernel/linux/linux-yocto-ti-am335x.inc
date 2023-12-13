@@ -1,7 +1,8 @@
 #
-# Copyright (C) 2018 Wind River Systems, Inc.
+# Copyright (C) 2023 Wind River Systems, Inc.
 #
 
 
-COMPATIBLE_MACHINE_ti-am335x = "ti-am335x"
-TARGET_SUPPORTED_KTYPES_ti-am335x = "standard"
+COMPATIBLE_MACHINE:ti-am335x = "ti-am335x"
+TARGET_SUPPORTED_KTYPES:ti-am335x = "standard preempt-rt"
+

@@ -1,4 +1,4 @@
-		TI AM335X EVM/SK and BeagleBone Black Support Package
+		TI AM335X EVM and BeagleBone Black Support Package
 
 
 Table of Contents
@@ -16,15 +16,14 @@ Table of Contents
 This BSP supports the following boards:
 
   + TI AM335x EVM          : AM335x processor, REV 1.2A SKU#01 CPU Board.
-  + TI AM335x SK           : AM335x processor, REV 1.2B CPU Board.
   + BeagleBone Black:	   : AM335x processor, RevC board.
 
 
 2. Change History
 =================
 
-  - 2019/08 (LINUXPG-103): WRLinux CI/CD, add AM335x evm/sk/BBB support
-			based on ti-processor-sdk-linux-am335x-evm-06.00.00.07
+  - 2024/01 (LINUXPG-1960):  Wind River Linux 10.23 RCPL6 Standard and Preempt-rt support based on
+			    TI SDK ti-processor-sdk-linux-am335x-evm-09.01.00.001
 
 3. BSP Features
 ===============
@@ -41,9 +40,9 @@ the corresponding h/w features exist.
 
   o Network
 	+ Ethernet: CPSW 10/100 Mb Ethernet controller
-	+ Bluetooth: HCI-UART (EVM/SK only)
+	+ Bluetooth: HCI-UART (EVM only)
 	+ CAN: Bosch D_CAN controller (EVM only in profile #1)
-	+ WiFi: TI WL12xx WLAN card via SDIO connector (EVM/SK only)
+	+ WiFi: TI WL12xx WLAN card via SDIO connector (EVM only)
 
   o Storage
 	+ EMMC: 4GB KE4CN2H5A (BBB only)
@@ -114,35 +113,12 @@ For a full description of the AM335x EVM, please refer to the following link:
 This BSP is only validated in following environment. If you use this BSP
 in a different environment it may possibly have some issues.
 
-	Processor:		AM335X ES1.0 (sgx neon)
+	Processor:		AM335X-GP rev 1.0
 	Board Rev:		TI-AM335X EVM, CPU board REV 1.2A
 	BootLoader:		U-Boot
-	BootLoader Version:	U-Boot SPL 2018.01
+	BootLoader Version:	U-Boot 2023.04-gd74d0993e2 (Oct 18 2023 - 17:49:46 +0000)
 
-4.2 TI AM335x SK
-================
-
-The AM335x Starter Kit (aka: AM335x SK) (TMDSSK3358) can be used as an
-evaluation and development platform for low cost AM335x based solutions
-and networking platforms.
-
-For a full description of the AM335x Starter Kit, please refer to the following link:
-
-	http://processors.wiki.ti.com/index.php/AM335xStarterKitHardwareUsersGuide
-
-4.2.1 Validated Board Info
---------------------------
-
-This BSP is only validated in the following environment. If you use this
-BSP in a different environment it may possibly have some issues.
-
-	Processor:		AM335X ES1.0 (sgx neon)
-	Board Rev:		CPU board REV 1.2B
-	BootLoader:		U-Boot
-	BootLoader Version:	U-Boot SPL 2018.01
-
-
-4.3 BeagleBoneBlack(BBB)
+4.2 BeagleBoneBlack(BBB)
 ========================
 
 The BeagleBone Black is a lower-cost, high-expansion focused BeagleBoard using a
@@ -151,15 +127,15 @@ low cost Sitara AM3358BZCZ100 Cortex A8 ARM processor from Texas Instruments.
 For a full description of BBB, please refer to the following link:
   http://beagleboard.org/getting-started
 
-4.3.1 Validated Board Info
+4.2.1 Validated Board Info
 --------------------------
 
-	Processor:		AM335X ES1.0 (sgx neon)
+	Processor:		AM335X-GP rev 2.1
 	Board Rev:		RevC
 	BootLoader:		U-Boot
-	BootLoader Version:	U-Boot SPL 2018.01
+	BootLoader Version:	U-Boot 2023.04-gd74d0993e2 (Oct 18 2023 - 17:49:46 +0000)
 
-4.4 Hardware profile settings for AM335X-EVM
+4.3 Hardware profile settings for AM335X-EVM
 ============================================
 
 This EVM has many different subsystems to allow development around the AM335x's

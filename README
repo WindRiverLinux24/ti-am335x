@@ -1,4 +1,4 @@
-        TI AM335x-EVM/SK and BeagleBoneBlack Boards
+        TI AM335x-EVM and BeagleBoneBlack Boards
 
 
 1. About this document
@@ -27,7 +27,7 @@ is done automatically when using the Wind River configure wrapper.
 
 License
 -------
-Copyright (C) 2018-2019 Wind River Systems, Inc.
+Copyright (C) 2024 Wind River Systems, Inc.
 
 Source code included in the tree for individual recipes is under the LICENSE
 stated in the associated recipe (.bb file) unless otherwise stated.
@@ -58,27 +58,26 @@ THE SOFTWARE.
 The following table summarizes the valid Wind River Linux distros for this BSP.
 'Y' in each content cell stands for supported; 'N' stands for not supported:
 
-  +--------------+-------------+-------------+------------------+
-  | valid/distro |   wrlinux   | wrlinux-cgl | wrlinux-std-sato |
-  +--------------+-------------+-------------+------------------+
-  |    valid     |      Y      |      N      |        Y         |
-  +--------------+-------------+-------------+------------------+
+  +--------------+-------------+------------------+-------------------+--------------+
+  | valid/distro |   wrlinux   | wrlinux-graphics | wrlinux-installer | wrlinux-tiny |
+  +--------------+-------------+------------------+-------------------+--------------+
+  |    valid     |      Y      |        Y         |         N         |       N      |
+  +--------------+-------------+------------------+-------------------+--------------+
 
 For the supported kernel type for this BSP, please check the TARGET_SUPPORTED_KTYPES
-by running 'bitbake -e | grep "^TARGET_SUPPORTED_KTYPES"'.
+by running 'bitbake -e virtual/kernel | grep "^TARGET_SUPPORTED_KTYPES="'.
 
-Note: The preempt-rt ktype is not available for this BSP/Machine at this time.
+Note: The preempt-rt ktype is available for this BSP/Machine at this time.
 
 
 3. Board Specific Patches
 =========================
 
-To get a list of patches applied to the kernel specific to this BSP,
-along with patch descriptions, use git to see what changed on the default
-kernel (git whatchanged <kernel_type>..<bsp_name>). For example:
+To get a list of patches applied to the kernel specific to this BSP along with
+patch descriptions use git-whatchanged on the default kernel. For example:
 
-	# cd path_to_project/tmp-glibc/work-shared/ti-am335x/kernel-source
-	# git whatchanged standard/base..HEAD
+	%> cd tmp-glibc/work-shared/<bsp_name>/kernel-source
+	%> git whatchanged <kernel_version>/standard/base..<kernel_version>/standard/<bsp_name>
 
 
 4. Boot Instructions
@@ -122,55 +121,20 @@ After loading the kernel, pass kernel arguments like following:
 Please set the right /dev/mmcblkXpX according to your real app scenario, then
 rootfs will be correctly mounted.
 
-5. WIC Notes
-============
 
-User can use the OpenEmbedded Image Creator to create the properly partitioned
-image on a SD card. It generates partitioned images from existing OpenEmbedded
-build artifacts. Please refer to the following URL for more detailed partition
-information about WIC:
-
-https://www.yoctoproject.org/docs/2.6/mega-manual/mega-manual.html#creating-partitioned-images-using-wic
-
-After having built your project, a partitioned WIC image will be created in the
-deploy folder as follows:
-
-  path_to_your_project/build/tmp-glibc/deploy/images/ti-am335x/wrlinux-image-glibc-<rootfs_type>-ti-am335x.wic
-
-There are two partitions in this WIC images, the first one is to hold the boot
-images, the second is the related root file system.
-
-5.1 An example to deploy bootloader into the first partition
-------------------------------------------------------------
-
-1) Deploy the created WIC image into SD card(/dev/sdx) in your host machine.
-
-   $ sudo dd if=wrlinux-image-glibc-<rootfs_type>-ti-am335x.wic of=/dev/sdx
-
-2) Deploy your own MLO and u-boot.img into this /dev/sdx1
-
-   $ sudo mount /dev/sdx1 path_to_sdx1
-   $ cp -r path_to_your_bootloader/MLO path_to_sdx1
-   $ cp -r path_to_your_bootloader/u-boot.img path_to_sdx1
-   $ sync; sudo umount path_to_sdx1
-
-5.2 Boot the board from the WIC SD card
-
----------------------------------------
-Insert the SD card into the board and select this SD card as the boot device.
-Then set the proper u-boot environment parameters to boot the board like the
-following steps:
-
-   $ setenv bootargs console=ttyS0,115200n8 root=/dev/mmcblk0p2 rw rootwait ip=dhcp
-   $ fatload mmc 0 0x82000000 zImage; fatload mmc 0 0x80005000 am335x-boneblack.dtb; bootz 0x82000000 - 0x80005000
-
-6. Features Notes
+5. Features Notes
 =================
 
-6.1 Audio(only evmsk board)
+Before using the features below, it is recommended that you first add
+WRTEMPLATE to your build local.conf to add series tools (Such as: can/audio/ufs).
+
+Simply add line as follows to ${buildprj}/build/conf/local.conf:
+	WRTEMPLATE = "feature/bsp-extras"
+
+5.1 Audio(only evmsk board)
 ---------------------------
 
-6.1.1 Usage and verification
+5.1.1 Usage and verification
 ----------------------------
 
         # amixer cset name='PGA Capture Volume' 80%,80%
@@ -178,21 +142,59 @@ following steps:
         # aplay -Dhw:0 /opt/wr-tes
         # aplay sample.wav
 
+
+5.2 Graphics
+------------
+
+AM335X is based on SGX series of devices from Imagination Technologies.
+
+Due to the software license terms, we are not permitted to redistribute these components.
+Due to this, we are unable to support the components (ti-sgx-ddk-km ti-sgx-ddk-um) or directly
+enable them (ti-sgx-ddk-km ti-sgx-ddk-um) within Wind River Linux. Please contact your silicon
+vendor if you have any questions about the software license terms.
+
+As below is the step how to build a graphics enabled system and verify the graphics feature:
+
+5.2.1 Build Image
+-----------------
+
+  1) set BB_NO_NETWORK as '0' in <path-of-project>/build/conf/local.conf file.
+
+  2) Launch bitbake to build an image with graphics support
+
+     $ cd path_to_your_project
+     $ . ./environment-setup-x86_64-wrlinuxsdk-linux
+     $ . ./oe-init-build-env
+     $ cat << _EOF >> conf/local.conf
+DISTRO ?= "wrlinux-graphics"
+MACHINE_FEATURES += " gpu"
+CUSTOMER_RECIPES:meta-ti-bsp += 'ti-sgx-ddk-km ti-sgx-ddk-um mesa-pvr'
+_EOF
+     $ bitbake wrlinux-image-std-sato
+
+
 5.3 PM suspend
 --------------
+
+AM335X requires am335x-pm-firmware.elf firmware to support power management.Because
+of the license issue, you can manually build the Image as below to integrate the
+am335x-pm related firmwares:
+
+  1) set BB_NO_NETWORK as '0' in ${buildprj}/build/conf/local.conf file.
+
+  2) Add line as follows to ${buildprj}/build/conf/local.conf:
+     $ cat << _EOF >> conf/local.conf
+CUSTOMER_RECIPES:meta-ti-bsp += 'amx3-cm3'
+IMAGE_INSTALL:append = ' amx3-cm3'
+_EOF
+
+  3) bitbake wrlinux-image-xxx
 
 5.3.1 Usage and verification
 ----------------------------
 
-        # echo standby > /sys/power/state
         # echo mem > /sys/power/state
 
-5.3.1 Note
-----------
-
-am335x requires am335x-pm-firmware.elf firmware to support power management, you can
-download it from https://git.ti.com/git/processor-firmware/ti-amx3-cm3-pm-firmware.git
-and put it in /lib/firmware
 
 5.4 PM CPU idle
 ---------------
@@ -223,49 +225,74 @@ root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# cat disable
 Since DDR2 is deprecated currently, C2 SR has been removed from SDK. So there
 are only two idle states in the latest SDK.
 
-5.5 Touch Screen
-----------------
+
+5.5 PM cpufreq
+--------------
 
 5.5.1 Usage and verification
+----------------------------
+
+  cpufreq:
+
+    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+    conservative ondemand userspace powersave performance
+    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+    720000
+    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+    275000 500000 600000 720000
+    # echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    # echo 275000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed
+    # cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+    275000
+
+
+5.6 Touch Screen
+----------------
+
+5.6.1 Usage and verification
 ----------------------------
 
 Touch screen calibration will be done when boot, and there is also a program
 in desktop when matchbox starts.
 
-5.6 Watchdog
+
+5.7 Watchdog
 ------------
 
-5.6.1 Usage and verification
+5.7.1 Usage and verification
 -----------------------------
 
         # echo 1 > /dev/watchdog
 
-5.7 USB
+
+5.8 USB
 -------
 
-5.7.1 Usage and verification
+5.8.1 Usage and verification
 ----------------------------
 
 Host mode is OK as-is, the following example for device mode:
         # modprobe g_multi "file=/dev/mmcblk0p1"
 
-5.7.2 note
+5.8.2 note
 ----------
-The status host/gadget of USB are OK on both EVM and SK.
+The status host/gadget of USB are OK on EVM.
 
-5.8 PWMSS
+
+5.9 PWMSS
 ---------
 
-5.8.1 Usage and verification
+5.9.1 Usage and verification
 -----------------------------
         The lcd brightness is controlled by ecap.
         the brightness will be changed:
         # echo 0~8 > /sys/devices/platform/backlight/backlight/backlight/brightness
 
-5.9 DCAN
+
+5.10 DCAN
 --------
 
-5.9.1 Usage and verification
+5.10.1 Usage and verification
 ----------------------------
 
         # ip link set can0 up type can bitrate 800000
@@ -275,7 +302,7 @@ The status host/gadget of USB are OK on both EVM and SK.
         # cansend can0 1F334455#1122334455667788
         # ip link set can0 down
 
-5.9.2 Target Notes
+5.10.2 Target Notes
 ------------------
 
 This feature is only available in profile #1 of AM335X EVM with a general
@@ -285,11 +312,27 @@ OFF. Please refer to the following link for more information:
 
   http://processors.wiki.ti.com/index.php/AM335X_DCAN_Driver_Guide
 
-5.10 Bluetooth & WLAN
+
+5.11 Bluetooth & WLAN
 ---------------------
 
-5.10.1 Bluetooth usage and verification
----------------------------------------
+Make sure the match between firmware version and your HD bluetooth module, and
+the wl12xx version is TIInit_7.6.15, wl18xx version is TIInit_11.8.32.bts. Because
+of the license issue, you can manually build the Image as below to integrate the
+bluetooth and wlan realated firmwares:
+
+  1) set BB_NO_NETWORK as '0' in ${buildprj}/build/conf/local.conf file.
+
+  2) Add line as follows to ${buildprj}/build/conf/local.conf:
+     $ cat << _EOF >> conf/local.conf
+CUSTOMER_RECIPES:meta-ti-bsp += 'bt-fw wlconf'
+IMAGE_INSTALL:append = ' bt-fw wlconf'
+_EOF
+
+  3) bitbake wrlinux-image-xxx
+
+5.11.1 Bluetooth verification
+-----------------------------
 
         # hciconfig hci0 up
         # hcitool -i hci0 scan
@@ -297,15 +340,61 @@ OFF. Please refer to the following link for more information:
                 00:EC:0A:0B:C7:xx       nobody
                 B8:8A:60:59:85:xx       PEK-XX
 
-5.10.2 Bluetooth Target Notes
------------------------------
+5.11.2 Wlan verification
+------------------------
 
-Make sure the match between firmware version and your HD bluetooth module, and
-the wl12xx version is TIInit_7.6.15, wl18xx version is TIInit_11.8.32.bts. You
-can get the firmware from https://git.ti.com/git/wilink8-bt/ti-bt-firmware.git
-Then put it under /lib/firmware/ti-connectivity/
+Execute the following commands to validate the WiFi cards:
 
-Then you can get your IP from dchp servers by the command:
-	# ifconfig wlan0 up
-        # dhclient wlan0
-        # ping -I wlan0 your_wifi_gatewayip
+        # ifconfig wlan<idx> up
+        # iw wlan<idx> scan
+        # iw dev wlan<idx> connect <AP essid>
+        # dhcpcd wlan<idx>
+        # ping <AP address> -i wlan<idx> -c 5
+
+
+5.12 Build U-Boot
+-----------------
+
+By default, the u-boot image is compiled and installed. If you want u-boot to be manually
+compiled separately, use the following command：
+
+	# bitbake u-boot-ti-staging
+
+6. WIC Notes
+============
+
+User can use the OpenEmbedded Image Creator to create the properly partitioned
+image on a SD card. It generates partitioned images from existing OpenEmbedded
+build artifacts. Please refer to the following URL for more detailed partition
+information about WIC:
+
+https://docs.yoctoproject.org/singleindex.html#creating-partitioned-images-using-wic
+
+After having built your project, a partitioned WIC image will be created in the
+deploy folder as follows:
+
+  path_to_your_project/build/tmp-glibc/deploy/images/ti-am335x/wrlinux-image-glibc-<rootfs_type>-ti-am335x.wic
+
+There are two partitions in this WIC images, the first one is to hold the boot
+images, the second is the related root file system.
+
+6.1 An example to deploy bootloader into the first partition
+------------------------------------------------------------
+
+Deploy the created WIC image into SD card(/dev/sdx) in your host machine.
+
+   $ sudo dd if=wrlinux-image-glibc-<rootfs_type>-ti-am335x.wic of=/dev/sdx
+
+6.2 Boot the board from the WIC SD card
+
+---------------------------------------
+Insert the SD card into the board and select this SD card as the boot device.
+Then set the proper u-boot environment parameters to boot the board like the
+following steps:
+
+   $ setenv bootargs console=ttyS0,115200n8 root=/dev/mmcblk0p2 rw rootwait ip=dhcp
+For EVM:
+   $ fatload mmc 0 0x82000000 zImage; fatload mmc 0 0x80005000 am335x-evm.dtb; bootz 0x82000000 - 0x80005000
+For BBB:
+   $ fatload mmc 0 0x82000000 zImage; fatload mmc 0 0x80005000 am335x-boneblack.dtb; bootz 0x82000000 - 0x80005000
+
