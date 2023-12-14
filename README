@@ -325,7 +325,7 @@ bluetooth and wlan realated firmwares:
 
   2) Add line as follows to ${buildprj}/build/conf/local.conf:
      $ cat << _EOF >> conf/local.conf
-CUSTOMER_RECIPES:meta-ti-bsp += 'bt-fw wlconf'
+CUSTOMER_RECIPES:meta-ti-extras += 'bt-fw wlconf'
 IMAGE_INSTALL:append = ' bt-fw wlconf'
 _EOF
 
