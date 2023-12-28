@@ -219,9 +219,7 @@ root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# echo 1 > disable
 root@localhost:/sys/devices/system/cpu/cpu0/cpuidle/state1# cat disable
 1
 
-5.4.1 Note
-----------
-
+Note:
 Since DDR2 is deprecated currently, C2 SR has been removed from SDK. So there
 are only two idle states in the latest SDK.
 
