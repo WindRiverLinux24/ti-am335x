@@ -36,7 +36,6 @@ the corresponding h/w features exist.
 
   o Bus
 	+ I2C: OMAP On-Chip I2C controller
-	+ SPI: OMAP McSPI bus controller in master mode
 
   o Network
 	+ Ethernet: CPSW 10/100 Mb Ethernet controller
@@ -47,14 +46,14 @@ the corresponding h/w features exist.
   o Storage
 	+ EMMC: 4GB KE4CN2H5A (BBB only)
 	+ NAND 256MB Micron MT29F2G08ABAEAWP NAND (EVM only)
-	+ SRAM for Voltage Scale Usage and Save/Restore for momory registers when System idle.
+	+ SRAM for Voltage Scale Usage and Save/Restore for memory registers when System idle.
 	+ MUSB High-speed dual-role controller, high/full/low speed for host, high/full speed for gadget
 	+ SD/MMC: OMAP High-Speed SD/MMC controller
 
   o User_Interface_Multimedia
-	+ Keypad: GPIO driven matrix keypad
-	+ LCD: SOC WXGA LCD controller, Frame Buffer with OMAP DSS support
-	+ AUDIO: AM33xx SoC Audio Controller
+	+ Keypad: GPIO driven matrix keypad (EVM only)
+	+ LCD: SOC WXGA LCD controller, Frame Buffer with OMAP DSS support (EVM only)
+	+ AUDIO: AM33xx SoC Audio Controller (EVM only)
 	+ SGX: The 2D/3D graphics accelerator (SGX) based on the POWERVR core
 
   o Power Mgmt
@@ -71,18 +70,18 @@ the corresponding h/w features exist.
 	+ GPIO: TI TPS65910 PMIC GPIO
 	+ RTC: OMAP RTC driver
 	+ EDMA: AM335x SoC EDMA engine
-	+ Sensors:
+	+ Sensors (EVM only):
 		+ Taos TSL2550 ambient light sensor
 		+ TI TMP275 temperature sensor
 		+ STMicro LIS3LV02Dx three-axis digital I2C accelerometer
 	Power Regulator:
-		+ AM335xEVM-SK: TI TPS65910Ax PMIC Power Regulator
+		+ AM335xEVM: TI TPS65910Ax PMIC Power Regulator
 		+ BBB: TI PS65217C PMIC Power Regulator
 
 3.2 Unsupported Features
 ========================
 
-The following features are not supported and validated:
+The following features are not supported and not validated:
 
 	x SmartReflex: AM33xx SmartReflex doesn't work due to HW issue
 
