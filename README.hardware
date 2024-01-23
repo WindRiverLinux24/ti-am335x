@@ -89,7 +89,8 @@ The following features are not supported and not validated:
 		- SPI: OMAP McSPI bus controller in master mode
 
 	x User_Interface_Multimedia
-		- HDMI: TDA19988 HDMI framer
+		- HDMI: TDA19988 HDMI framer (BBB only)
+		- HDMI: Audio interface due to known TI SDK issue (BBB only)
 		- Touchscreen: AM335x SoC 4/5/8 wire touchscreen controller connected to ADC controller
 
 4. BSP Notes
