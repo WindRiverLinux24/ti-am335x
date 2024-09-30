@@ -9,7 +9,7 @@ MACHINE_FEATURES += "usbhost jffs2 ext2 screen alsa"
 DISTRO_FEATURES:append = " vfat wifi bluetooth"
 
 KERNEL_IMAGETYPE = "zImage"
-KERNEL_DEVICETREE = "am335x-evm.dtb am335x-boneblack.dtb"
+KERNEL_DEVICETREE = "ti/omap/am335x-evm.dtb ti/omap/am335x-boneblack.dtb"
 
 SERIAL_CONSOLE = "115200 ttyS0"
 

@@ -8,9 +8,10 @@ Please refer to README.hardware for hardware specific information.
 
 Dependencies
 ------------
-This layer depends on the oe-core version supplied with Wind River Linux
-and the wr-kernel layer.
-
+This layer depends on the following layers supplied with Wind River Linux:
+	oe-core
+	wrlinux
+	meta-ti
 
 Maintenance
 -----------
@@ -137,10 +138,9 @@ Simply add line as follows to ${buildprj}/build/conf/local.conf:
 5.1.1 Usage and verification
 ----------------------------
 
-        # amixer cset name='PGA Capture Volume' 80%,80%
-        # amixer cset name='PCM Playback Volume' 80%,80%
-        # aplay -Dhw:0 /opt/wr-tes
-        # aplay sample.wav
+        # amixer -c 0 cset name='PGA Capture Volume' 80%,80%
+        # amixer -c 0 cset name='PCM Playback Volume' 80%,80%
+        # aplay -D hw:0,0 sample.wav
 
 
 5.2 Graphics
@@ -193,6 +193,7 @@ _EOF
 5.3.1 Usage and verification
 ----------------------------
 
+        # echo enabled > /sys/class/tty/ttyS0/device/power/wakeup
         # echo mem > /sys/power/state
 
 
