@@ -37,3 +37,8 @@ PREFERRED_PROVIDER_virtual/libglx = "${@bb.utils.contains("MACHINE_FEATURES", "g
 PREFERRED_PROVIDER_virtual/mesa = "${@bb.utils.contains("MACHINE_FEATURES", "gpu", "mesa-pvr", "mesa", d)}"
 PVR_DISPLAY_CONTROLLER_ALIAS ?= "tilcdc"
 PREFERRED_PROVIDER_virtual/gpudriver ?= "${@bb.utils.contains("MACHINE_FEATURES", "gpu", "ti-sgx-ddk-km", "", d)}"
+PREFERRED_VERSION_mesa-pvr = "22.3.5"
+
+XSERVER = "xserver-xorg \
+           xf86-video-fbdev \
+           "
