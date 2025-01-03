@@ -39,6 +39,8 @@ PVR_DISPLAY_CONTROLLER_ALIAS ?= "tilcdc"
 PREFERRED_PROVIDER_virtual/gpudriver ?= "${@bb.utils.contains("MACHINE_FEATURES", "gpu", "ti-sgx-ddk-km", "", d)}"
 PREFERRED_VERSION_mesa-pvr = "22.3.5"
 
+PREFERRED_VERSION_u-boot-ti-staging = "2023.04%"
+
 XSERVER = "xserver-xorg \
            xf86-video-fbdev \
            "
